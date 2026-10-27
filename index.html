@@ -134,7 +134,7 @@ nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:600}
     <button data-act="tab" data-v="so"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h10l3 3v15H6z"/><path d="M9 10h7M9 14h7M9 18h4"/></svg>Sổ tính</button>
   </div>
 </nav>
-<input type="file" id="restoreIn" accept=".json,application/json" hidden>
+<input type="file" id="restoreIn" accept=".json,.txt,application/json,text/plain" hidden>
 <script src="data.js"></script>
 <script src="calc.js"></script>
 <script>
@@ -238,7 +238,7 @@ function render(){
 function viewMenu(tab){
   const items=[...Object.entries(LOOKUPS).filter(([,x])=>x.tab===tab),...Object.entries(SCREENS).filter(([,x])=>x.tab===tab)];
   const soon=(SOON[tab]||[]).map(([t,w])=>`<div class="mi" aria-disabled="true"><span class="ic" style="opacity:.5">…</span><span class="tx"><span class="tt" style="color:var(--muted)">${esc(t)}</span></span><span class="soon">${w}</span></div>`).join('');
-  return `<div class="stack"><div class="top"><h1>${TABS[tab]}</h1></div>
+  return `<div class="stack"><div class="top"><h1>${TABS[tab]}</h1></div>${backupBanner()}
     <div class="menu">${items.map(([id,x])=>`<button class="mi" data-act="open" data-id="${id}"><span class="ic">${esc(x.ic)}</span><span class="tx"><span class="tt">${esc(x.title)}</span><br><span class="ds">${esc(x.ds)}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--muted)"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}${soon}</div>
     <p class="disc">Kết quả là tính toán sơ bộ để soát nhanh, không thay thế tính toán thiết kế.</p></div>`;
 }
@@ -464,10 +464,37 @@ function viewNotebook(){
   const body=list.length?Object.keys(groups).sort().map(g=>`<div class="eyebrow" style="margin-top:4px">${esc(g)}</div><div class="menu">${groups[g].sort((a,b)=>b.ts-a.ts).map(it=>{const u=it.util;const col=u==null?'var(--muted)':u>1?'var(--bad)':u>0.9?'var(--warn)':'var(--ok)';
       return `<div class="mi"><button class="tx" style="text-align:left" data-act="openSaved" data-id="${it.id}"><span class="tt">${esc(it.name)}</span><br><span class="ds">${esc(SCREENS[it.screen]?.title||'')} · ${new Date(it.ts).toLocaleDateString('vi-VN')} · <span style="color:${col};font-weight:600">${u==null?'':Math.round(u*100)+'%'}</span></span></button><button class="btn sm danger" data-act="delSaved" data-id="${it.id}">Xóa</button></div>`}).join('')}</div>`).join('')
     :`<div class="card" style="text-align:center"><b>Sổ tính đang trống</b><p class="hint">Mở một màn tính, nhập số liệu rồi bấm "Lưu vào sổ tính". Phép tính được gom theo dự án để bạn mở lại khi soát hồ sơ.</p></div>`;
-  return `<div class="stack"><div class="top"><h1>Sổ tính</h1></div>${body}
+  return `<div class="stack"><div class="top"><h1>Sổ tính</h1></div>${backupBanner()}${body}
     <div class="card stack"><div class="eyebrow">Sao lưu</div><p class="hint" style="margin:0">Dữ liệu chỉ nằm trong máy này. Thỉnh thoảng tải file sao lưu cất vào Drive.</p>
-    <div class="row"><button class="btn" data-act="backup">Tải file sao lưu</button><button class="btn" data-act="restore">Khôi phục</button></div></div>
+    ${lsGet('dnks.lastBackup',0)?`<p class="hint" style="margin:0">Lần sao lưu gần nhất: ${new Date(lsGet('dnks.lastBackup',0)).toLocaleDateString('vi-VN')}.</p>`:''}
+    ${canShareFiles()?'<button class="btn pri" data-act="backup" data-mode="share">Gửi bản sao lưu (Drive, Zalo…)</button>':''}
+    <div class="row"><button class="btn" data-act="backup" data-mode="save">Tải file .json về máy</button><button class="btn" data-act="restore">Khôi phục</button></div></div>
     ${installEvt?'<button class="btn pri" data-act="install">Cài app vào màn hình chính</button>':''}</div>`;
+}
+const canShareFiles=()=>{try{return !!(navigator.canShare&&navigator.canShare({files:[new File(['x'],'a.txt',{type:'text/plain'})]}))}catch(e){return false}};
+async function shareFile(base,text){
+  // Android chỉ cho chia sẻ một số loại file: thử .json trước, không được thì gửi .txt (nội dung y hệt)
+  for(const [ext,type] of [['json','application/json'],['txt','text/plain']]){
+    const f=new File([text],`${base}.${ext}`,{type});
+    let ok=false;try{ok=!!(navigator.canShare&&navigator.canShare({files:[f]}))}catch(e){}
+    if(!ok)continue;
+    try{await navigator.share({files:[f],title:f.name});return 'shared'}catch(e){return e&&e.name==='AbortError'?'cancel':'fail'}
+  }
+  return 'unsupported';
+}
+function downloadText(name,text){const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const l=document.createElement('a');l.href=url;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
+async function backup(mode){
+  const data={app:'do-nghe-ky-su',version:1,exported:new Date().toISOString(),notebook:lsGet(NB,[]),inputs:Object.fromEntries(Object.keys(SCREENS).map(id=>[id,lsGet('dnks.inp.'+id,null)]).filter(x=>x[1]))};
+  const text=JSON.stringify(data),base=`so-tinh-${new Date().toISOString().slice(0,10)}`;
+  if(mode==='share'){const r=await shareFile(base,text);if(r==='cancel')return;if(r==='shared'){toast('Đã gửi bản sao lưu')}else{downloadText(base+'.json',text);toast('Đã lưu vào thư mục Tải xuống')}}
+  else{downloadText(base+'.json',text);toast('Đã lưu vào thư mục Tải xuống')}
+  lsSet('dnks.lastBackup',Date.now());render();
+}
+function backupBanner(){
+  const n=lsGet(NB,[]).length;if(n<3)return '';
+  const lb=lsGet('dnks.lastBackup',0);const days=lb?Math.floor((Date.now()-lb)/864e5):null;
+  if(days!==null&&days<14)return '';
+  return `<div class="note warn" style="align-items:center"><span class="dt">!</span><span style="flex:1">${days===null?`Sổ tính có ${n} phép tính nhưng chưa sao lưu lần nào.`:`Đã ${days} ngày chưa sao lưu sổ tính.`}</span><button class="btn sm" data-act="backup" data-mode="${canShareFiles()?'share':'save'}">Sao lưu ngay</button></div>`;
 }
 function saveCalcForm(){
   const out=$('#out');if(!out)return;
@@ -501,8 +528,7 @@ document.addEventListener('click',e=>{
   if(a==='delSaved'){if(el.dataset.arm!=='1'){el.dataset.arm='1';el.classList.add('armed');el.textContent='Chắc chưa?';setTimeout(()=>{if(el.isConnected){el.dataset.arm='';el.classList.remove('armed');el.textContent='Xóa'}},3000);return}
     lsSet(NB,lsGet(NB,[]).filter(x=>x.id!==el.dataset.id));render();toast('Đã xóa');return}
   if(a==='st'){lsSet('dnks.lk.st',el.dataset.t);render();return}
-  if(a==='backup'){const data={app:'do-nghe-ky-su',version:1,exported:new Date().toISOString(),notebook:lsGet(NB,[])};
-    const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));const l=document.createElement('a');l.href=url;l.download=`so-tinh-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Đã lưu vào thư mục Tải xuống');return}
+  if(a==='backup'){backup(el.dataset.mode);return}
   if(a==='restore'){$('#restoreIn').value='';$('#restoreIn').click();return}
   if(a==='install'){if(installEvt){installEvt.prompt();installEvt=null}return}
 });
@@ -513,7 +539,7 @@ document.addEventListener('change',e=>{const f=e.target.dataset&&e.target.datase
   if(e.target.tagName==='SELECT'){const st=window.scrollY;$('#fields').innerHTML=sc.fields.map(x=>fieldHtml(x,S.vals)).join('');window.scrollTo(0,st)}
   computeAndShow()});
 $('#restoreIn').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.app!=='do-nghe-ky-su'||!Array.isArray(d.notebook))throw 0;
-  const have=new Set(lsGet(NB,[]).map(x=>x.id));const merged=lsGet(NB,[]).concat(d.notebook.filter(x=>!have.has(x.id)));lsSet(NB,merged);toast(`Đã khôi phục ${merged.length-have.size} phép tính`);render()}catch(err){toast('File không phải bản sao lưu của Đồ nghề kỹ sư')}});
+  const have=new Set(lsGet(NB,[]).map(x=>x.id));const merged=lsGet(NB,[]).concat(d.notebook.filter(x=>!have.has(x.id)));lsSet(NB,merged);if(d.inputs)Object.entries(d.inputs).forEach(([id,v])=>{if(SCREENS[id]&&!lsGet('dnks.inp.'+id,null))lsSet('dnks.inp.'+id,v)});toast(`Đã khôi phục ${merged.length-have.size} phép tính`);render()}catch(err){toast('File không phải bản sao lưu của Đồ nghề kỹ sư')}});
 
 S.tab=lsGet('dnks.tab','thep');if(!TABS[S.tab])S.tab='thep';
 history.replaceState({},'');

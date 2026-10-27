@@ -1,4 +1,4 @@
-const VERSION = 'dnks-v1';
+const VERSION = 'dnks-v2';
 const CORE = ['./', './index.html', './data.js', './calc.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
