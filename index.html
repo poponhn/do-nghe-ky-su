@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Đồ nghề kỹ sư</title>
+<meta name="theme-color" content="#1D4E89">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: một cột kiểu app điện thoại, tối đa 560px; thanh tab dưới; mỗi màn tính = ô nhập → thẻ kết quả → hình vẽ → ghi chú → công thức */
+:root{
+  --bg:#EEF1F4;--surface:#FFFFFF;--surface-2:#E4E9EE;--ink:#14202B;--muted:#5A6874;--line:#D3DAE1;
+  --accent:#1D4E89;--accent-ink:#FFFFFF;--accent-soft:#DCE7F4;
+  --ok:#17663F;--ok-soft:#DDF1E5;--warn:#8A5300;--warn-soft:#FBEBCF;--bad:#B3261E;--bad-soft:#FADFDC;
+  --draw:#14202B;--draw-2:#8C99A5;--tension:#C2410C;--compress:#1D4E89;
+  --f-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D141B;--surface:#151E27;--surface-2:#1D2833;--ink:#E3EAF0;--muted:#94A3B0;--line:#283542;
+  --accent:#7DB3F0;--accent-ink:#0A1B2E;--accent-soft:#16304D;
+  --ok:#6FD49B;--ok-soft:#123323;--warn:#F2B35B;--warn-soft:#3A2A12;--bad:#F28B82;--bad-soft:#3D1D1A;
+  --draw:#E3EAF0;--draw-2:#6B7A88;--tension:#FB923C;--compress:#7DB3F0;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D141B;--surface:#151E27;--surface-2:#1D2833;--ink:#E3EAF0;--muted:#94A3B0;--line:#283542;
+  --accent:#7DB3F0;--accent-ink:#0A1B2E;--accent-soft:#16304D;
+  --ok:#6FD49B;--ok-soft:#123323;--warn:#F2B35B;--warn-soft:#3A2A12;--bad:#F28B82;--bad-soft:#3D1D1A;
+  --draw:#E3EAF0;--draw-2:#6B7A88;--tension:#FB923C;--compress:#7DB3F0;color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 10px;width:100%;min-width:0;height:40px}
+input{font-family:var(--f-num);font-size:15px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.app{max-width:560px;margin:0 auto;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:14px calc(84px + env(safe-area-inset-bottom,0px))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-height:40px}
+.top h1{font-size:19px;font-weight:700;margin:0;flex:1;min-width:0;text-wrap:balance;letter-spacing:-.01em}
+.back{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
+.eyebrow{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stack{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.menu{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mi{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;width:100%}
+.mi:last-child{border-bottom:0}
+.mi:active{background:var(--surface-2)}
+.mi .ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none;font-family:var(--f-num);font-weight:600;font-size:13px}
+.mi .tx{flex:1;min-width:0}
+.mi .tt{font-weight:600}
+.mi .ds{font-size:13px;color:var(--muted)}
+.mi .soon{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--surface-2);color:var(--muted)}
+.seg{display:flex;background:var(--surface-2);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;padding:6px 8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);min-height:34px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 10px}
+.f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label{font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.f label .u{font-family:var(--f-num);font-size:11.5px}
+.grp{grid-column:1/-1;font-size:12px;font-weight:600;color:var(--accent);margin-top:4px;letter-spacing:.03em;text-transform:uppercase}
+.verdict{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)}
+.verdict.bad{background:var(--bad-soft);color:var(--bad)}
+.verdict.near{background:var(--warn-soft);color:var(--warn)}
+.verdict.none{background:var(--surface-2);color:var(--muted)}
+.verdict .big{font-family:var(--f-num);font-size:26px;font-weight:600;line-height:1}
+.verdict .lbl{font-size:13px;line-height:1.35}
+.verdict .lbl b{display:block;font-size:15px}
+.chk{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.chk:last-child{border-bottom:0}
+.chk .k{font-size:13.5px}
+.chk .r{font-family:var(--f-num);font-size:13px;text-align:right;white-space:nowrap}
+.chk .bar{grid-column:1/-1;height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin-top:3px}
+.chk .bar i{display:block;height:100%;border-radius:3px}
+.chk .dc{grid-column:1/-1;font-family:var(--f-num);font-size:11.5px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;font-size:13.5px;align-items:baseline}
+.kv .v{font-family:var(--f-num);text-align:right}
+.kv .s{font-weight:600}
+.notes{display:flex;flex-direction:column;gap:6px}
+.note{display:flex;gap:8px;font-size:13px;line-height:1.45;padding:8px 10px;border-radius:10px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.info{background:var(--surface-2);color:var(--ink)}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note .dt{flex:none;font-family:var(--f-num);font-weight:600}
+details.card summary{cursor:pointer;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between}
+details.card summary::after{content:"+";font-family:var(--f-num);color:var(--muted)}
+details[open].card summary::after{content:"−"}
+.fx{font-family:var(--f-num);font-size:12.5px;line-height:1.55;padding:8px 0;border-bottom:1px dashed var(--line)}
+.fx:last-child{border-bottom:0}
+.draw{width:100%;height:auto;display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600;min-height:42px;font-size:14px}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.sm{min-height:34px;padding:5px 10px;font-size:13px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.armed{background:var(--bad);color:#fff}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);font-family:var(--f-num);font-variant-numeric:tabular-nums}
+th{font-family:var(--f-ui);font-weight:600;font-size:12px;color:var(--muted);background:var(--surface-2);position:sticky;top:0}
+td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+th:first-child{background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+.hint{font-size:12.5px;color:var(--muted)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:20}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:62px}
+nav.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--muted)}
+nav.tabs svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--accent);font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;max-width:calc(100% - 32px)}
+.sticky-sum{position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.disc{font-size:12px;color:var(--muted);text-align:center;padding:6px 8px}
+@media (max-width:360px){.fields{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<nav class="tabs" aria-label="Điều hướng">
+  <div class="in">
+    <button data-act="tab" data-v="tra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h11a3 3 0 0 1 3 3v12H7a3 3 0 0 1-3-3z"/><path d="M8 9h6M8 13h6"/></svg>Tra cứu</button>
+    <button data-act="tab" data-v="btct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1"/><circle cx="9" cy="17" r="1.3"/><circle cx="15" cy="17" r="1.3"/><circle cx="9" cy="7" r="1.3"/><circle cx="15" cy="7" r="1.3"/></svg>BTCT</button>
+    <button data-act="tab" data-v="thep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 4h14M5 20h14M12 4v16"/></svg>Thép</button>
+    <button data-act="tab" data-v="tien"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 17h18"/><path d="M5 17V9M19 17V9"/><path d="M5 9c4 4 10 4 14 0"/></svg>Tiện ích</button>
+    <button data-act="tab" data-v="so"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h10l3 3v15H6z"/><path d="M9 10h7M9 14h7M9 18h4"/></svg>Sổ tính</button>
+  </div>
+</nav>
+<input type="file" id="restoreIn" accept=".json,application/json" hidden>
+<script src="data.js"></script>
+<script src="calc.js"></script>
+<script>
+const D=DATA,K=CALC;
+let installEvt=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lsGet=(k,f)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+const fmtN=(x,d)=>{if(typeof x!=='number'||!isFinite(x))return String(x);const dd=d!=null?d:(Math.abs(x)>=100?1:Math.abs(x)>=10?2:3);return x.toLocaleString('vi-VN',{maximumFractionDigits:dd,minimumFractionDigits:0})};
+let tt;function toast(m){let el=$('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=m;clearTimeout(tt);tt=setTimeout(()=>el.remove(),2600)}
+
+/* ---------- danh sách lựa chọn ---------- */
+const O=(arr,key)=>arr.map(o=>[o[key],o[key]]);
+const OPT={
+  conc:O(D.CONCRETE,'g'),rebar:O(D.REBAR,'g'),
+  barMain:D.BAR_D.filter(d=>d>=10&&d<=36).map(d=>[d,'Φ'+d]),barStir:[6,8,10,12].map(d=>[d,'Φ'+d]),barSlab:[6,8,10,12,14,16].map(d=>[d,'Φ'+d]),
+  bolt:O(D.BOLTS,'n'),boltGr:O(D.BOLT_GRADES,'g'),anchGr:O(D.ANCHOR_GRADES,'g'),steel:O(D.STEEL,'g'),
+};
+const secOpts=type=>D.SECTIONS[type].map(d=>[d.join('x'),K.sectionName(type,d)]);
+
+/* ---------- định nghĩa các màn tính ---------- */
+const F=(id,label,unit,def,extra)=>Object.assign({id,label,unit,def,type:'num'},extra||{});
+const S_=(id,label,opts,def,extra)=>Object.assign({id,label,opts,def,type:'sel'},extra||{});
+const G=label=>({type:'grp',label});
+const isT=v=>v.code==='TCVN',isA=v=>v.code==='ACI';
+const SCREENS={
+  beamFlex:{tab:'btct',ic:'M',title:'Dầm chịu uốn',ds:'M → As, chọn thanh, bố trí 1–2 lớp',codes:['TCVN','ACI'],fn:K.beamFlex,
+    fields:[G('Nội lực'),F('M','Moment','kNm',200),G('Tiết diện'),F('b','Bề rộng b','mm',300),F('h','Chiều cao h','mm',600),
+      F('cover','Lớp bảo vệ (tới đai)','mm',25),S_('dStir','Đai',OPT.barStir,8),S_('D','Thép chủ',OPT.barMain,20),F('gapV','Hở giữa 2 lớp','mm','',{ph:'tự động'}),
+      G('Vật liệu'),S_('conc','Bê tông',OPT.conc,'B25',{when:isT}),S_('steel','Thép',OPT.rebar,'CB400-V',{when:isT}),S_('gb1','Hệ số γb1',[[1,'1,0'],[0.9,'0,9']],1,{when:isT}),
+      F('fc','f′c','MPa',28,{when:isA}),F('fy','fy','MPa',420,{when:isA}),F('dagg','Cỡ hạt cốt liệu','mm',20,{when:isA})],
+    draw:drawBeamSec},
+  beamShear:{tab:'btct',ic:'Q',title:'Dầm chịu cắt',ds:'Q → kiểm tiết diện, bước đai',codes:['TCVN'],fn:K.beamShear,
+    fields:[G('Nội lực'),F('Q','Lực cắt','kN',180),G('Tiết diện'),F('b','b','mm',300),F('h','h','mm',600),F('a','a (trọng tâm thép)','mm',45),
+      G('Cốt đai'),S_('dStir','Đường kính',OPT.barStir,8),S_('legs','Số nhánh',[[2,'2'],[3,'3'],[4,'4']],2),F('s','Bước đai s','mm',150),
+      G('Vật liệu'),S_('conc','Bê tông',OPT.conc,'B25'),S_('steel','Thép đai',OPT.rebar,'CB240-T')]},
+  slab:{tab:'btct',ic:'S',title:'Sàn',ds:'M/m → Φ@a',codes:['TCVN'],fn:K.slab,
+    fields:[F('M','Moment trên 1 m','kNm/m',15),F('h','Chiều dày sàn','mm',120),F('cover','Lớp bảo vệ (tới mép thép)','mm',15),S_('D','Đường kính',OPT.barSlab,10),
+      S_('conc','Bê tông',OPT.conc,'B25'),S_('steel','Thép',OPT.rebar,'CB400-V')]},
+  boltGroup:{tab:'thep',ic:'BL',title:'Liên kết bulông chịu M, N, V',ds:'Quy đổi M → lực kéo; kéo đứt, cắt đứt, ép mặt',codes:['EC3','AISC'],fn:K.boltGroup,
+    fields:[G('Nội lực'),F('M','Moment','kNm',60),F('N','Lực dọc (+ kéo)','kN',0),F('V','Lực cắt','kN',100),
+      G('Bố trí'),F('rows','Số hàng','',4),F('cols','Số cột','',2),F('p','Bước hàng p','mm',80),F('g','Khoảng cột g','mm',100),
+      S_('method','Quy đổi moment',[['linear','Tuyến tính M·y/Σy²'],['couple','Cặp ngẫu lực M/z']],'linear',{full:true}),
+      F('z','Cánh tay đòn z','mm',240,{when:v=>v.method==='couple'}),F('nt','Số hàng chịu kéo','',2,{when:v=>v.method==='couple'}),
+      G('Bulông'),S_('bolt','Cỡ',OPT.bolt,'M20'),S_('grade','Cấp bền',OPT.boltGr,'8.8'),S_('shear','Mặt cắt',[['thread','Qua ren'],['shank','Qua thân']],'thread',{full:true}),
+      G('Bản mã'),F('t','Chiều dày t','mm',12),F('fu','fu bản mã','MPa',430),F('e1','Mép e1 (theo lực cắt)','mm',50),F('e2','Mép e2 (vuông góc)','mm',40)],
+    draw:drawBolts},
+  blockTear:{tab:'thep',ic:'BT',title:'Xé khối bản mã',ds:'Block tearing / block shear',codes:['EC3','AISC'],fn:K.blockTear,
+    fields:[F('V','Lực','kN',400),S_('mode','Dạng khối',[['centre','Khối giữa (2 mặt cắt)'],['corner','Khối góc (1 mặt cắt)']],'centre'),
+      G('Bố trí'),F('n1','Số hàng dọc lực','',3),F('n2','Số cột','',2),F('p1','Bước p1','mm',70),F('p2','Bước p2','mm',80),F('e1','Mép đầu e1','mm',50),F('e2','Mép bên e2','mm',40),
+      G('Bản'),F('d0','Lỗ d0','mm',22),F('t','Dày t','mm',10),S_('grade','Mác thép',OPT.steel,'S275')],
+    draw:drawBlock},
+  tension:{tab:'thep',ic:'N',title:'Thanh / bản mã chịu kéo',ds:'Chảy tiết diện nguyên, đứt tiết diện thực',codes:['EC3','AISC'],fn:K.tension,
+    fields:[F('N','Lực kéo','kN',300),F('w','Bề rộng bản','mm',150),F('t','Dày','mm',12),F('nh','Số lỗ trên 1 mặt cắt','',2),F('d0','Đường kính lỗ','mm',22),
+      S_('grade','Mác thép',OPT.steel,'S275'),F('U','Hệ số trễ cắt U','',1,{when:v=>v.code==='AISC'})]},
+  anchor:{tab:'thep',ic:'NE',title:'Bulông neo',ds:'Cone breakout, phá vỡ mép, pullout, pryout',codes:['ACI 318'],fn:K.anchor,
+    fields:[G('Nội lực'),F('N','Lực kéo','kN',80),F('V','Lực cắt','kN',40),S_('vdir','Cắt hướng về',[['R','Mép phải'],['L','Mép trái'],['T','Mép trên'],['B','Mép dưới']],'R',{full:true}),
+      G('Neo'),S_('bolt','Cỡ',OPT.bolt,'M24'),S_('grade','Thép neo',OPT.anchGr,'F1554 Gr36'),F('hef','Chiều sâu chôn hef','mm',300),F('Abrg','Abrg (trống = ê-cu)','mm²','',{ph:'tự động'}),
+      F('rows','Số hàng','',2),F('cols','Số cột','',2),F('sx','Khoảng cách sx','mm',200),F('sy','Khoảng cách sy','mm',200),
+      G('Mép bê tông (để trống = xa)'),F('cL','Trái','mm','',{ph:'∞'}),F('cR','Phải','mm',150,{ph:'∞'}),F('cB','Dưới','mm','',{ph:'∞'}),F('cT','Trên','mm','',{ph:'∞'}),
+      G('Bê tông'),F('fc','f′c','MPa',28),F('ha','Chiều dày ha','mm',600),S_('cracked','Trạng thái',[['yes','Có nứt'],['no','Không nứt']],'yes')],
+    draw:drawAnchor},
+  member:{tab:'thep',ic:'λ',title:'Thép hình: độ mảnh, nén',ds:'KL/r, χ, mảnh cục bộ. Ống, hộp, H, U, góc',codes:['EC3','AISC'],fn:K.member,
+    fields:[S_('force','Chịu',[['comp','Nén'],['tension','Kéo']],'comp'),F('N','Lực','kN',300),
+      S_('type','Loại',[['H','H / I'],['U','U'],['L','Góc L/V'],['CHS','Ống tròn'],['RHS','Hộp']],'H'),S_('sec','Tiết diện',v=>secOpts(v.type||'H'),'200x200x8x12x13'),
+      S_('grade','Mác thép',OPT.steel,'S355'),S_('formed','Ống/hộp',[['hot','Cán nóng'],['cold','Tạo hình nguội']],'hot',{when:v=>v.type==='CHS'||v.type==='RHS'}),
+      F('L','Chiều dài L','m',4),F('Ky','K trục khỏe','',1),F('Kz','K trục yếu','',1)],
+    help:'K: khớp-khớp 1,0 · ngàm-khớp 0,7 · ngàm-ngàm 0,5 · côngxôn 2,0',draw:drawSection},
+  beamCase:{tab:'tien',ic:'M',title:'Nội lực dầm',ds:'Đơn giản, côngxôn, ngàm: M, V, độ võng',codes:[],fn:K.beamCase,
+    fields:[S_('case','Sơ đồ',[['ss_w','Đơn giản, tải phân bố'],['ss_p','Đơn giản, tải tập trung'],['cant_w','Côngxôn, phân bố'],['cant_p','Côngxôn, tập trung đầu'],['ff_w','Ngàm 2 đầu, phân bố'],['ff_p','Ngàm 2 đầu, tập trung giữa'],['pc_w','Ngàm-khớp, phân bố']],'ss_w',{full:true}),
+      F('L','Nhịp L','m',6),F('w','Tải phân bố w','kN/m',20,{when:v=>/_w$/.test(v.case)}),F('P','Tải tập trung P','kN',50,{when:v=>/_p$/.test(v.case)}),F('a','Vị trí P cách gối trái','m',3,{when:v=>v.case==='ss_p'}),
+      F('E','E','MPa',200000),F('I','I','cm⁴',7210)],
+    help:'Tra I của thép hình ở tab Tra cứu → Thép hình. Bê tông: E theo mác, I = bh³/12.',draw:drawBeamCase},
+};
+const LOOKUPS={
+  rebar:{tab:'tra',ic:'Φ',title:'Cốt thép',ds:'As theo số thanh, Φ@a → As/m'},
+  bolts:{tab:'tra',ic:'M',title:'Bulông',ds:'As, lỗ, sức chịu 1 bulông'},
+  mats:{tab:'tra',ic:'B',title:'Vật liệu',ds:'Bê tông, cốt thép, thép kết cấu'},
+  sections:{tab:'tra',ic:'H',title:'Thép hình',ds:'A, kg/m, I, r, rmin'},
+  units:{tab:'tien',ic:'⇄',title:'Quy đổi đơn vị',ds:'Lực, moment, ứng suất, chiều dài'},
+};
+const SOON={btct:[['Cột BTCT','đợt 3']],thep:[['Strut-and-tie (dầm cao, vai cột)','đợt 2'],['Đường hàn góc','đợt 2']],tien:[['Cẩu lắp: góc sling, chia tải','đợt 3']]};
+const TABS={tra:'Tra cứu',btct:'Bê tông cốt thép',thep:'Kết cấu thép',tien:'Tiện ích',so:'Sổ tính'};
+
+/* ---------- trạng thái ---------- */
+const S={tab:'thep',screen:null,vals:{}};
+function defaults(id){const sc=SCREENS[id];const v={code:sc.codes[0]||''};sc.fields.forEach(f=>{if(f.id)v[f.id]=f.def});return v}
+function loadVals(id){return Object.assign(defaults(id),lsGet('dnks.inp.'+id,{}))}
+function saveVals(){if(S.screen&&SCREENS[S.screen])lsSet('dnks.inp.'+S.screen,S.vals)}
+
+/* ---------- render ---------- */
+function render(){
+  const app=$('#app');
+  document.querySelectorAll('nav.tabs [data-act="tab"]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===S.tab?'page':'false'));
+  if(S.screen&&SCREENS[S.screen]){app.innerHTML=viewCalc();computeAndShow();return}
+  if(S.screen&&LOOKUPS[S.screen]){app.innerHTML=viewLookup(S.screen);bindLookup(S.screen);return}
+  if(S.tab==='so'){app.innerHTML=viewNotebook();return}
+  app.innerHTML=viewMenu(S.tab);
+}
+function viewMenu(tab){
+  const items=[...Object.entries(LOOKUPS).filter(([,x])=>x.tab===tab),...Object.entries(SCREENS).filter(([,x])=>x.tab===tab)];
+  const soon=(SOON[tab]||[]).map(([t,w])=>`<div class="mi" aria-disabled="true"><span class="ic" style="opacity:.5">…</span><span class="tx"><span class="tt" style="color:var(--muted)">${esc(t)}</span></span><span class="soon">${w}</span></div>`).join('');
+  return `<div class="stack"><div class="top"><h1>${TABS[tab]}</h1></div>
+    <div class="menu">${items.map(([id,x])=>`<button class="mi" data-act="open" data-id="${id}"><span class="ic">${esc(x.ic)}</span><span class="tx"><span class="tt">${esc(x.title)}</span><br><span class="ds">${esc(x.ds)}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--muted)"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}${soon}</div>
+    <p class="disc">Kết quả là tính toán sơ bộ để soát nhanh, không thay thế tính toán thiết kế.</p></div>`;
+}
+function fieldHtml(f,v){
+  if(f.type==='grp')return `<div class="grp">${esc(f.label)}</div>`;
+  if(f.when&&!f.when(v))return '';
+  const id='in_'+f.id;
+  const lab=`<label for="${id}"><span>${esc(f.label)}</span>${f.unit?`<span class="u">${esc(f.unit)}</span>`:''}</label>`;
+  if(f.type==='sel'){const opts=typeof f.opts==='function'?f.opts(v):f.opts;
+    return `<div class="f${f.full?' full':''}">${lab}<select id="${id}" data-f="${f.id}">${opts.map(([val,t])=>`<option value="${esc(val)}" ${String(val)===String(v[f.id])?'selected':''}>${esc(t)}</option>`).join('')}</select></div>`}
+  return `<div class="f${f.full?' full':''}">${lab}<input id="${id}" data-f="${f.id}" inputmode="decimal" autocomplete="off" value="${esc(v[f.id]??'')}" placeholder="${esc(f.ph||'')}"></div>`;
+}
+function viewCalc(){
+  const sc=SCREENS[S.screen],v=S.vals;
+  const codes=sc.codes.length>1?`<div class="seg" role="group" aria-label="Tiêu chuẩn">${sc.codes.map(c=>`<button data-act="code" data-c="${c}" aria-pressed="${v.code===c}">${c}</button>`).join('')}</div>`:(sc.codes.length?`<div class="hint">Theo ${sc.codes[0]}</div>`:'');
+  return `<div class="stack">
+    <div class="top"><button class="back" data-act="back" aria-label="Quay lại"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h1>${esc(sc.title)}</h1></div>
+    ${codes}
+    <div class="card"><div class="fields" id="fields">${sc.fields.map(f=>fieldHtml(f,v)).join('')}</div>${sc.help?`<p class="hint" style="margin:10px 0 0">${esc(sc.help)}</p>`:''}</div>
+    <div id="out" class="stack"></div>
+    <div class="row"><button class="btn pri" data-act="saveCalc">Lưu vào sổ tính</button><button class="btn" data-act="reset">Về giá trị mặc định</button></div>
+    <p class="disc">Kết quả sơ bộ, dùng để soát nhanh. Không thay thế tính toán thiết kế.</p>
+  </div>`;
+}
+function parseVals(sc,v){const o={};sc.fields.forEach(f=>{if(!f.id)return;let x=v[f.id];if(f.type==='num'&&typeof x==='string')x=x.replace(',','.');o[f.id]=x});o.code=v.code==='ACI 318'?'ACI':v.code;return o}
+function computeAndShow(){
+  const sc=SCREENS[S.screen],out=$('#out');if(!out)return;
+  const p=parseVals(sc,S.vals);
+  let res;
+  try{res=sc.fn(p)}catch(e){out.innerHTML=`<div class="note bad">Chưa tính được với số liệu này. Kiểm tra lại các ô nhập.</div>`;return}
+  const bad=[...res.rows.map(r=>r.v),...res.checks.map(c=>c.c)].some(x=>typeof x==='number'&&!isFinite(x));
+  const g=res.gov;
+  let verdict='';
+  if(g){const u=g.util;const cls=!isFinite(u)||isNaN(u)?'none':u>1?'bad':u>0.9?'near':'ok';
+    verdict=`<div class="verdict ${cls} sticky-sum" aria-live="polite"><span class="big">${isFinite(u)?Math.round(u*100)+'%':'—'}</span><span class="lbl"><b>${cls==='bad'?'Không đạt':cls==='near'?'Đạt, sát giới hạn':cls==='ok'?'Đạt':'Thiếu số liệu'}</b>Khống chế: ${esc(g.k)}</span></div>`}
+  const chk=res.checks.length?`<div class="card"><div class="eyebrow" style="margin-bottom:4px">Kiểm tra</div>${res.checks.map(c=>{const u=c.util;const col=!isFinite(u)?'var(--draw-2)':u>1?'var(--bad)':u>0.9?'var(--warn)':'var(--ok)';
+      const fd=x=>typeof x==='number'?fmtN(x,c.fmt):esc(x);
+      return `<div class="chk"><span class="k">${esc(c.k)}</span><span class="r" style="color:${col};font-weight:600">${isFinite(u)?Math.round(u*100)+'%':'—'}</span>
+      <span class="bar"><i style="width:${Math.min(100,(isFinite(u)?u:0)*100).toFixed(1)}%;background:${col}"></i></span>
+      <span class="dc">${fd(c.d)} / ${fd(c.c)} ${esc(c.u)}</span></div>`}).join('')}</div>`:'';
+  const rows=`<div class="card"><div class="eyebrow" style="margin-bottom:6px">Kết quả</div><div class="kv">${res.rows.map(r=>`<span${r.strong?' class="s"':''}>${esc(r.k)}</span><span class="v${r.strong?' s':''}">${typeof r.v==='number'?fmtN(r.v):esc(r.v)} ${esc(r.u||'')}</span>`).join('')}</div></div>`;
+  let drawing='';
+  if(sc.draw){try{drawing=`<div class="card">${sc.draw(res,p)}</div>`}catch(e){drawing=''}}
+  const notes=res.notes.length?`<div class="notes">${res.notes.map(n=>`<div class="note ${n.t}"><span class="dt">${n.t==='ok'?'✓':n.t==='bad'?'✕':n.t==='warn'?'!':'i'}</span><span>${esc(n.s)}</span></div>`).join('')}</div>`:'';
+  const fx=res.formulas.length?`<details class="card"><summary>Công thức và tiêu chuẩn</summary><div style="margin-top:6px">${res.formulas.map(f=>`<div class="fx">${esc(f)}</div>`).join('')}</div></details>`:'';
+  out.innerHTML=(bad?'<div class="note warn"><span class="dt">!</span><span>Có ô nhập thiếu hoặc bằng 0, một số kết quả chưa tính được.</span></div>':'')+verdict+chk+rows+drawing+notes+fx;
+  S.lastRes=res;
+}
+
+/* ---------- hình vẽ ---------- */
+function svgWrap(w,h,body,label){return `<svg class="draw" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}" font-family="var(--f-num)">${body}</svg>`}
+function drawBeamSec(res){
+  const d=res.draw;if(!d)return '';
+  const W=320,H=260,pad=34;const sc=Math.min((W-2*pad)/d.b,(H-2*pad)/d.h);
+  const bw=d.b*sc,bh=d.h*sc,x0=(W-bw)/2,y0=(H-bh)/2;
+  const ci=(d.cover)*sc,ds=d.ds*sc;
+  let bars='';
+  d.layers.forEach((k,i)=>{const yc=y0+bh-(d.cover+d.ds+d.D/2+i*(d.D+d.gapV))*sc;
+    const left=x0+ci+ds+d.D*sc/2,right=x0+bw-ci-ds-d.D*sc/2;
+    for(let j=0;j<k;j++){const xc=k===1?(left+right)/2:left+(right-left)*j/(k-1);bars+=`<circle cx="${xc.toFixed(1)}" cy="${yc.toFixed(1)}" r="${Math.max(2.5,d.D*sc/2).toFixed(1)}" fill="var(--tension)"/>`}});
+  const top=`<circle cx="${(x0+ci+ds+6).toFixed(1)}" cy="${(y0+ci+ds+6).toFixed(1)}" r="3" fill="var(--draw-2)"/><circle cx="${(x0+bw-ci-ds-6).toFixed(1)}" cy="${(y0+ci+ds+6).toFixed(1)}" r="3" fill="var(--draw-2)"/>`;
+  return svgWrap(W,H,`<rect x="${x0}" y="${y0}" width="${bw}" height="${bh}" fill="var(--surface-2)" stroke="var(--draw)" stroke-width="1.5"/>
+    <rect x="${x0+ci}" y="${y0+ci}" width="${bw-2*ci}" height="${bh-2*ci}" rx="4" fill="none" stroke="var(--draw-2)" stroke-width="${Math.max(1,ds).toFixed(1)}"/>${top}${bars}
+    <text x="${W/2}" y="${y0-10}" font-size="11" text-anchor="middle" fill="var(--muted)">b = ${d.b}</text>
+    <text x="${x0-8}" y="${H/2}" font-size="11" text-anchor="middle" fill="var(--muted)" transform="rotate(-90 ${x0-8} ${H/2})">h = ${d.h}</text>
+    <text x="${W/2}" y="${y0+bh+20}" font-size="11" text-anchor="middle" fill="var(--tension)">${d.layers.map((k,i)=>k+'Φ'+d.D).join(' + ')} · hở ${Math.round(d.clear)} mm</text>`,'Mặt cắt dầm và bố trí thép');
+}
+function drawBolts(res,p){
+  const d=res.draw;if(!d)return '';
+  const pw=(d.cols-1)*d.g+2*d.e2,ph=(d.rows-1)*d.p+2*d.e1;
+  const W=320,H=280,pad=30;const sc=Math.min((W-2*pad-40)/pw,(H-2*pad)/ph);
+  const x0=(W-pw*sc)/2-10,y0=(H-ph*sc)/2;
+  let b='';
+  for(let i=0;i<d.rows;i++)for(let j=0;j<d.cols;j++){
+    const x=x0+(d.e2+j*d.g)*sc,y=y0+(d.e1+i*d.p)*sc;
+    const tens=d.method==='couple'?i<(+p.nt||Math.floor(d.rows/2)):i<d.rows/2;
+    const top=i===0;
+    b+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${Math.max(4,d.d0*sc/2).toFixed(1)}" fill="${tens?(top?'var(--tension)':'color-mix(in srgb,var(--tension) 55%,transparent)'):'var(--surface)'}" stroke="var(--draw)" stroke-width="1.3"/>`}
+  const cy=y0+ph*sc/2;
+  return svgWrap(W,H,`<rect x="${x0}" y="${y0}" width="${pw*sc}" height="${ph*sc}" fill="var(--surface-2)" stroke="var(--draw)" stroke-width="1.5"/>
+    <line x1="${x0-8}" x2="${x0+pw*sc+8}" y1="${cy}" y2="${cy}" stroke="var(--draw-2)" stroke-dasharray="4 3"/>${b}
+    <path d="M ${x0+pw*sc+26} ${cy-34} a 34 34 0 0 1 0 68" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M ${x0+pw*sc+26} ${cy+34} l -7 -2 l 4 -6 z" fill="var(--accent)"/>
+    <text x="${x0+pw*sc+44}" y="${cy+4}" font-size="12" fill="var(--accent)">M</text>
+    <text x="${x0}" y="${y0-8}" font-size="11" fill="var(--tension)">● chịu kéo lớn nhất</text>`,'Sơ đồ nhóm bulông');
+}
+function drawBlock(res){
+  const d=res.draw;if(!d)return '';
+  const pw=(d.n2-1)*d.p2+2*Math.max(d.e2,d.p2/2)+(d.centre?80:0),ph=(d.n1-1)*d.p1+d.e1+60;
+  const W=320,H=250,pad=24;const sc=Math.min((W-2*pad)/pw,(H-2*pad)/ph);
+  const x0=(W-pw*sc)/2,y0=pad;
+  const bx=j=>x0+((d.centre?40:0)+Math.max(d.e2,d.p2/2)+j*d.p2)*sc,by=i=>y0+(d.e1+i*d.p1)*sc;
+  let b='';for(let i=0;i<d.n1;i++)for(let j=0;j<d.n2;j++)b+=`<circle cx="${bx(j).toFixed(1)}" cy="${by(i).toFixed(1)}" r="${Math.max(3.5,d.d0*sc/2).toFixed(1)}" fill="var(--surface)" stroke="var(--draw)" stroke-width="1.3"/>`;
+  const yb=by(d.n1-1);
+  const block=d.centre?`<path d="M ${bx(0)} ${y0} V ${yb} H ${bx(d.n2-1)} V ${y0}" fill="none" stroke="var(--tension)" stroke-width="2.2" stroke-dasharray="6 4"/>`
+    :`<path d="M ${bx(0)} ${y0} V ${yb} H ${x0+pw*sc}" fill="none" stroke="var(--tension)" stroke-width="2.2" stroke-dasharray="6 4"/>`;
+  return svgWrap(W,H,`<rect x="${x0}" y="${y0}" width="${pw*sc}" height="${ph*sc}" fill="var(--surface-2)" stroke="var(--draw)" stroke-width="1.5"/>${b}${block}
+    <path d="M ${W/2} ${y0+ph*sc+2} v -0" /><text x="${x0+4}" y="${y0+ph*sc-6}" font-size="11" fill="var(--tension)">- - đường xé khối</text>
+    <path d="M ${(bx(0)+bx(d.n2-1))/2} ${y0-2} v -0"/>`,'Sơ đồ xé khối');
+}
+function drawAnchor(res,p){
+  const d=res.draw;if(!d)return '';
+  const hef=d.hef,big=d.big;
+  const gx=(d.cols-1)*d.sx,gy=(d.rows-1)*d.sy;
+  const ext=v=>v>=big?1.9*hef:Math.min(v,3*hef);
+  const L=ext(d.cL),R=ext(d.cR),B=ext(d.cB),T=ext(d.cT);
+  const tw=L+gx+R,th=B+gy+T;
+  const W=320,H=300,pad=26;const sc=Math.min((W-2*pad)/tw,(H-2*pad)/th);
+  const x0=(W-tw*sc)/2,y0=(H-th*sc)/2;
+  const X=x=>x0+(L+x)*sc,Y=y=>y0+(T+gy-y)*sc;
+  // bê tông
+  let s=`<rect x="${x0}" y="${y0}" width="${tw*sc}" height="${th*sc}" fill="var(--surface-2)"/>`;
+  const edge=(cond,x1,y1,x2,y2)=>cond?`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--draw)" stroke-width="2.5"/>`:'';
+  s+=edge(d.cL<big,x0,y0,x0,y0+th*sc)+edge(d.cR<big,x0+tw*sc,y0,x0+tw*sc,y0+th*sc)+edge(d.cB<big,x0,y0+th*sc,x0+tw*sc,y0+th*sc)+edge(d.cT<big,x0,y0,x0+tw*sc,y0);
+  // diện tích chiếu ANc
+  const ax1=-Math.min(d.cL,1.5*hef),ax2=gx+Math.min(d.cR,1.5*hef),ay1=-Math.min(d.cB,1.5*hef),ay2=gy+Math.min(d.cT,1.5*hef);
+  s+=`<rect x="${X(ax1)}" y="${Y(ay2)}" width="${(ax2-ax1)*sc}" height="${(ay2-ay1)*sc}" fill="color-mix(in srgb,var(--accent) 18%,transparent)" stroke="var(--accent)" stroke-width="1.5"/>`;
+  s+=`<defs><clipPath id="concClip"><rect x="${x0}" y="${y0}" width="${tw*sc}" height="${th*sc}"/></clipPath></defs><g clip-path="url(#concClip)">`;
+  for(let i=0;i<d.rows;i++)for(let j=0;j<d.cols;j++){const ax=j*d.sx,ay=i*d.sy;
+    s+=`<rect x="${X(ax-1.5*hef)}" y="${Y(ay+1.5*hef)}" width="${3*hef*sc}" height="${3*hef*sc}" fill="none" stroke="var(--draw-2)" stroke-dasharray="3 3"/>`;}
+  s+='</g>';
+  for(let i=0;i<d.rows;i++)for(let j=0;j<d.cols;j++)s+=`<circle cx="${X(j*d.sx)}" cy="${Y(i*d.sy)}" r="5" fill="var(--draw)"/>`;
+  // lực cắt
+  const cx=X(gx/2),cy=Y(gy/2),v={R:[1,0],L:[-1,0],T:[0,-1],B:[0,1]}[d.dir];
+  s+=`<line x1="${cx}" y1="${cy}" x2="${cx+v[0]*44}" y2="${cy+v[1]*44}" stroke="var(--tension)" stroke-width="2.5"/><circle cx="${cx+v[0]*44}" cy="${cy+v[1]*44}" r="4" fill="var(--tension)"/><text x="${cx+v[0]*52}" y="${cy+v[1]*52+4}" font-size="12" fill="var(--tension)" text-anchor="middle">V</text>`;
+  s+=`<text x="${x0+6}" y="${y0+14}" font-size="10.5" fill="var(--accent)">▭ ANc (diện tích chiếu)</text><text x="${x0+6}" y="${y0+28}" font-size="10.5" fill="var(--muted)">┅ 1,5hef quanh mỗi neo</text>`;
+  const lab=(cond,val,x,y,anch)=>cond?`<text x="${x}" y="${y}" font-size="10.5" fill="var(--ink)" text-anchor="${anch}">${val}</text>`:'';
+  s+=lab(d.cR<big,'c='+d.cR,x0+tw*sc-4,Y(gy/2)-8,'end')+lab(d.cL<big,'c='+d.cL,x0+4,Y(gy/2)-8,'start')+lab(d.cB<big,'c='+d.cB,X(gx/2),y0+th*sc-6,'middle')+lab(d.cT<big,'c='+d.cT,X(gx/2),y0+14+(d.cT<big?30:0),'middle');
+  return svgWrap(W,H,s,'Mặt bằng bulông neo và diện tích chiếu hình nón');
+}
+function drawSection(res,p){
+  const t=p.type,dm=String(p.sec).split('x').map(Number);const W=300,H=220;
+  let s='',mx=Math.max(dm[0],dm[1]);const sc=150/mx,cx=W/2,cy=H/2;
+  const R=(x,y,w,h)=>`<rect x="${(cx+x*sc).toFixed(1)}" y="${(cy+y*sc).toFixed(1)}" width="${(w*sc).toFixed(1)}" height="${(h*sc).toFixed(1)}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.4"/>`;
+  if(t==='H'){const[h,b,tw,tf]=dm;s=R(-b/2,-h/2,b,tf)+R(-b/2,h/2-tf,b,tf)+R(-tw/2,-h/2+tf,tw,h-2*tf)}
+  if(t==='U'){const[h,b,tw,tf]=dm;s=R(-b/2,-h/2,b,tf)+R(-b/2,h/2-tf,b,tf)+R(-b/2,-h/2+tf,tw,h-2*tf)}
+  if(t==='L'){const[a,b,tt]=dm;s=R(-a/2,b/2-tt,a,tt)+R(-a/2,-b/2,tt,b-tt);
+    const pr=res.props;const ang=0.5*Math.atan2(-2*0,1);
+    s+=`<line x1="${cx-90}" y1="${cy-90}" x2="${cx+90}" y2="${cy+90}" stroke="var(--tension)" stroke-dasharray="5 4"/><text x="${cx+70}" y="${cy+96}" font-size="12" fill="var(--tension)">v</text><text x="${cx+96}" y="${cy+78}" font-size="10.5" fill="var(--tension)">rv = ${pr.rv.toFixed(1)}</text>`}
+  if(t==='CHS'){const[Dd,tt]=dm;s=`<circle cx="${cx}" cy="${cy}" r="${(Dd/2-tt/2)*sc}" fill="none" stroke="var(--accent)" stroke-width="${Math.max(1.5,tt*sc)}"/>`}
+  if(t==='RHS'){const[h,b,tt]=dm;s=`<rect x="${cx-b/2*sc+tt*sc/2}" y="${cy-h/2*sc+tt*sc/2}" width="${(b-tt)*sc}" height="${(h-tt)*sc}" fill="none" stroke="var(--accent)" stroke-width="${Math.max(1.5,tt*sc)}"/>`}
+  s+=`<line x1="${cx-110}" x2="${cx+110}" y1="${cy}" y2="${cy}" stroke="var(--draw-2)" stroke-dasharray="2 3"/><line x1="${cx}" x2="${cx}" y1="${cy-100}" y2="${cy+100}" stroke="var(--draw-2)" stroke-dasharray="2 3"/>`;
+  return svgWrap(W,H,s,'Hình dạng tiết diện');
+}
+function drawBeamCase(res,p){
+  const c=p.case,W=320,H=120,x1=30,x2=290,y=70;let s=`<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="var(--draw)" stroke-width="3"/>`;
+  const pin=x=>`<path d="M ${x} ${y+2} l -9 15 h 18 z" fill="none" stroke="var(--draw)" stroke-width="1.5"/>`;
+  const fix=x=>`<line x1="${x}" x2="${x}" y1="${y-22}" y2="${y+22}" stroke="var(--draw)" stroke-width="3"/>${[...Array(5)].map((_,i)=>`<line x1="${x}" y1="${y-20+i*10}" x2="${x+(x<160?-8:8)}" y2="${y-14+i*10}" stroke="var(--draw)"/>`).join('')}`;
+  if(c.startsWith('ss'))s+=pin(x1)+pin(x2);
+  if(c.startsWith('cant'))s+=fix(x1);
+  if(c.startsWith('ff'))s+=fix(x1)+fix(x2);
+  if(c.startsWith('pc'))s+=fix(x1)+pin(x2);
+  if(/_w$/.test(c)){for(let x=x1;x<=x2;x+=20)s+=`<line x1="${x}" x2="${x}" y1="${y-34}" y2="${y-6}" stroke="var(--tension)" stroke-width="1.4"/><path d="M ${x} ${y-4} l -3 -6 h 6 z" fill="var(--tension)"/>`;s+=`<line x1="${x1}" x2="${x2}" y1="${y-34}" y2="${y-34}" stroke="var(--tension)"/><text x="${(x1+x2)/2}" y="${y-40}" font-size="12" fill="var(--tension)" text-anchor="middle">w = ${p.w} kN/m</text>`}
+  else{const xp=c==='ss_p'?x1+(x2-x1)*Math.min(1,Math.max(0,(+p.a)/(+p.L))):c==='cant_p'?x2:(x1+x2)/2;s+=`<line x1="${xp}" x2="${xp}" y1="${y-44}" y2="${y-6}" stroke="var(--tension)" stroke-width="2.2"/><path d="M ${xp} ${y-4} l -5 -9 h 10 z" fill="var(--tension)"/><text x="${xp}" y="${y-50}" font-size="12" fill="var(--tension)" text-anchor="middle">P = ${p.P} kN</text>`}
+  s+=`<text x="${(x1+x2)/2}" y="${y+40}" font-size="11.5" fill="var(--muted)" text-anchor="middle">L = ${p.L} m</text>`;
+  return svgWrap(W,H,s,'Sơ đồ dầm');
+}
+
+/* ---------- tra cứu ---------- */
+function viewLookup(id){
+  const x=LOOKUPS[id];
+  const head=`<div class="top"><button class="back" data-act="back" aria-label="Quay lại"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h1>${esc(x.title)}</h1></div>`;
+  if(id==='rebar'){
+    const Ds=[8,10,12,14,16,18,20,22,25,28,32];const ns=[1,2,3,4,5,6,7,8,9,10];
+    const t1=`<div class="tbl"><table><thead><tr><th>Φ</th><th>kg/m</th>${ns.map(n=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${Ds.map(d=>{const a=K.barArea(d);return `<tr><td>Φ${d}</td><td>${(a*7850e-6).toFixed(3)}</td>${ns.map(n=>`<td>${Math.round(n*a)}</td>`).join('')}</tr>`}).join('')}</tbody></table></div>`;
+    const ss=[100,120,150,180,200,250];const D2=[6,8,10,12,14,16,18,20];
+    const t2=`<div class="tbl"><table><thead><tr><th>Φ \\ a</th>${ss.map(s=>`<th>a${s}</th>`).join('')}</tr></thead><tbody>${D2.map(d=>`<tr><td>Φ${d}</td>${ss.map(s=>`<td>${Math.round(1000*K.barArea(d)/s)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return `<div class="stack">${head}<div class="eyebrow">Diện tích As (mm²) theo số thanh</div>${t1}<div class="eyebrow">As trên 1 m (mm²/m) theo bước a</div>${t2}
+      <div class="card"><div class="eyebrow" style="margin-bottom:6px">Tìm nhanh</div><div class="fields"><div class="f"><label for="lk_as">As cần (mm²)</label><input id="lk_as" inputmode="decimal" value="1200"></div><div class="f"><label for="lk_asm">As/m cần (mm²/m)</label><input id="lk_asm" inputmode="decimal" value="450"></div></div><div id="lk_out" class="hint" style="margin-top:8px"></div></div></div>`;
+  }
+  if(id==='bolts'){
+    const gsel=lsGet('dnks.lk.bg','8.8');const gr=D.BOLT_GRADES.find(g=>g.g===gsel)||D.BOLT_GRADES[2];
+    return `<div class="stack">${head}<div class="f"><label for="lk_bg">Cấp bền</label><select id="lk_bg">${D.BOLT_GRADES.map(g=>`<option ${g.g===gr.g?'selected':''}>${g.g}</option>`).join('')}</select></div>
+      <div class="tbl"><table><thead><tr><th>Cỡ</th><th>d</th><th>As</th><th>d0</th><th>Ft,Rd</th><th>Fv,Rd ren</th><th>Fv,Rd thân</th></tr></thead><tbody>${D.BOLTS.map(b=>`<tr><td>${b.n}</td><td>${b.d}</td><td>${b.As}</td><td>${b.d0}</td><td>${(0.9*gr.fub*b.As/1.25/1000).toFixed(1)}</td><td>${(gr.av*gr.fub*b.As/1.25/1000).toFixed(1)}</td><td>${(0.6*gr.fub*Math.PI*b.d*b.d/4/1.25/1000).toFixed(1)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="hint">Sức chịu 1 bulông theo EN 1993-1-8 (kN), γM2 = 1,25. As: diện tích chịu kéo phần ren (mm²). d0: lỗ tiêu chuẩn.</p></div>`;
+  }
+  if(id==='mats'){
+    return `<div class="stack">${head}<div class="eyebrow">Bê tông (TCVN 5574:2018)</div><div class="tbl"><table><thead><tr><th>Cấp</th><th>Rb</th><th>Rbt</th><th>Eb</th></tr></thead><tbody>${D.CONCRETE.map(c=>`<tr><td>${c.g}</td><td>${c.Rb}</td><td>${c.Rbt}</td><td>${c.Eb.toLocaleString('vi-VN')}</td></tr>`).join('')}</tbody></table></div>
+      <div class="eyebrow">Cốt thép (TCVN 5574:2018)</div><div class="tbl"><table><thead><tr><th>Loại</th><th>Rs</th><th>Rsc</th><th>Rsw</th></tr></thead><tbody>${D.REBAR.map(c=>`<tr><td>${c.g}</td><td>${c.Rs}</td><td>${c.Rsc}</td><td>${c.Rsw}</td></tr>`).join('')}</tbody></table></div>
+      <div class="eyebrow">Thép kết cấu (t ≤ 16 mm)</div><div class="tbl"><table><thead><tr><th>Mác</th><th>fy</th><th>fu</th></tr></thead><tbody>${D.STEEL.map(c=>`<tr><td>${c.g}</td><td>${c.fy}</td><td>${c.fu}</td></tr>`).join('')}</tbody></table></div>
+      <p class="hint">Đơn vị MPa. Đối chiếu lại với tiêu chuẩn hoặc chứng chỉ vật liệu của dự án.</p></div>`;
+  }
+  if(id==='sections'){
+    const type=lsGet('dnks.lk.st','H');
+    const rowsH=D.SECTIONS[type].map(d=>{const pr=K.sectionProps(type,d);return `<tr><td>${K.sectionName(type,d)}</td><td>${(pr.A/100).toFixed(2)}</td><td>${pr.mass.toFixed(1)}</td><td>${(pr.Iy/1e4).toFixed(0)}</td><td>${(pr.Iz/1e4).toFixed(0)}</td><td>${(pr.ry/10).toFixed(2)}</td><td>${(pr.rz/10).toFixed(2)}</td><td>${(pr.rmin/10).toFixed(2)}</td></tr>`}).join('');
+    return `<div class="stack">${head}<div class="seg" role="group" aria-label="Loại thép hình">${[['H','H/I'],['U','U'],['L','Góc'],['CHS','Ống'],['RHS','Hộp']].map(([k,t])=>`<button data-act="st" data-t="${k}" aria-pressed="${k===type}">${t}</button>`).join('')}</div>
+      <div class="tbl"><table><thead><tr><th>Tiết diện</th><th>A cm²</th><th>kg/m</th><th>Ix cm⁴</th><th>Iy cm⁴</th><th>rx cm</th><th>ry cm</th><th>rmin cm</th></tr></thead><tbody>${rowsH}</tbody></table></div>
+      <p class="hint">Tính từ kích thước danh định${type==='H'||type==='U'?' có kể bán kính lượn':''}. ${type==='L'?'rmin của thép góc là rv (trục chính nhỏ, xiên 45°). Ix, Iy theo trục song song cánh.':''}${type==='U'?'Thép U cánh vát: Iy thực nhỏ hơn khoảng 10–15%.':''} Đối chiếu bảng nhà sản xuất khi cần chính xác.</p></div>`;
+  }
+  if(id==='units'){
+    return `<div class="stack">${head}<div class="card"><div class="fields">
+      <div class="f"><label for="u_kind">Đại lượng</label><select id="u_kind">${Object.keys(UNITS).map(k=>`<option>${k}</option>`).join('')}</select></div>
+      <div class="f"><label for="u_val">Giá trị</label><input id="u_val" inputmode="decimal" value="1"></div>
+      <div class="f full"><label for="u_from">Từ đơn vị</label><select id="u_from"></select></div></div></div><div id="u_out" class="card"></div></div>`;
+  }
+  return head;
+}
+const UNITS={
+  'Lực':{N:1,kN:1e3,MN:1e6,kgf:9.80665,'T (tấn lực)':9806.65,lbf:4.448222,kip:4448.222},
+  'Moment':{'N·m':1,'kN·m':1e3,'kgf·m':9.80665,'T·m':9806.65,'kip·ft':1355.818,'kip·in':112.9848,'lbf·ft':1.355818},
+  'Ứng suất':{MPa:1,kPa:1e-3,'N/mm²':1,'kgf/cm²':0.0980665,'T/m²':0.00980665,psi:0.00689476,ksi:6.89476},
+  'Chiều dài':{mm:1,cm:10,m:1000,in:25.4,ft:304.8},
+  'Tải phân bố':{'kN/m':1,'N/mm':1,'kgf/m':0.00980665,'T/m':9.80665,'kip/ft':14.5939,'lbf/ft':0.0145939},
+  'Áp lực':{'kN/m² (kPa)':1,'kgf/m²':0.00980665,'T/m²':9.80665,psf:0.0478803,'ksf':47.8803},
+};
+function bindLookup(id){
+  if(id==='rebar'){const upd=()=>{const as=+($('#lk_as').value.replace(',','.'))||0,asm=+($('#lk_asm').value.replace(',','.'))||0;
+    const a=[12,14,16,18,20,22,25,28,32].map(d=>{const n=Math.max(2,Math.ceil(as/K.barArea(d)));return `${n}Φ${d} (${Math.round(n*K.barArea(d))})`}).join(' · ');
+    const b=[8,10,12,14,16].map(d=>{const s=Math.min(200,Math.floor(1000*K.barArea(d)/asm/10)*10);return s>=70?`Φ${d}a${s}`:null}).filter(Boolean).join(' · ');
+    $('#lk_out').innerHTML=`<b>As ${as}:</b> ${a}<br><b>As/m ${asm}:</b> ${b||'—'}`};$('#lk_as').oninput=upd;$('#lk_asm').oninput=upd;upd()}
+  if(id==='bolts'){$('#lk_bg').onchange=e=>{lsSet('dnks.lk.bg',e.target.value);render()}}
+  if(id==='units'){const kind=$('#u_kind'),from=$('#u_from'),val=$('#u_val'),out=$('#u_out');
+    const fill=()=>{from.innerHTML=Object.keys(UNITS[kind.value]).map(u=>`<option>${u}</option>`).join('');upd()};
+    const upd=()=>{const t=UNITS[kind.value],x=+(val.value.replace(',','.'))||0,base=x*t[from.value];
+      const f=x=>{const a=Math.abs(x);return a===0?'0':(a<0.01||a>=1e7)?x.toExponential(3).replace('.',','):fmtN(x,4)};out.innerHTML=`<div class="kv">${Object.keys(t).map(u=>`<span>${u}</span><span class="v">${f(base/t[u])}</span>`).join('')}</div>`};
+    kind.onchange=fill;from.onchange=upd;val.oninput=upd;fill()}
+}
+
+/* ---------- sổ tính ---------- */
+const NB='dnks.notebook';
+function viewNotebook(){
+  const list=lsGet(NB,[]);
+  const groups={};list.forEach(it=>{(groups[it.project||'Chưa gán dự án']=groups[it.project||'Chưa gán dự án']||[]).push(it)});
+  const body=list.length?Object.keys(groups).sort().map(g=>`<div class="eyebrow" style="margin-top:4px">${esc(g)}</div><div class="menu">${groups[g].sort((a,b)=>b.ts-a.ts).map(it=>{const u=it.util;const col=u==null?'var(--muted)':u>1?'var(--bad)':u>0.9?'var(--warn)':'var(--ok)';
+      return `<div class="mi"><button class="tx" style="text-align:left" data-act="openSaved" data-id="${it.id}"><span class="tt">${esc(it.name)}</span><br><span class="ds">${esc(SCREENS[it.screen]?.title||'')} · ${new Date(it.ts).toLocaleDateString('vi-VN')} · <span style="color:${col};font-weight:600">${u==null?'':Math.round(u*100)+'%'}</span></span></button><button class="btn sm danger" data-act="delSaved" data-id="${it.id}">Xóa</button></div>`}).join('')}</div>`).join('')
+    :`<div class="card" style="text-align:center"><b>Sổ tính đang trống</b><p class="hint">Mở một màn tính, nhập số liệu rồi bấm "Lưu vào sổ tính". Phép tính được gom theo dự án để bạn mở lại khi soát hồ sơ.</p></div>`;
+  return `<div class="stack"><div class="top"><h1>Sổ tính</h1></div>${body}
+    <div class="card stack"><div class="eyebrow">Sao lưu</div><p class="hint" style="margin:0">Dữ liệu chỉ nằm trong máy này. Thỉnh thoảng tải file sao lưu cất vào Drive.</p>
+    <div class="row"><button class="btn" data-act="backup">Tải file sao lưu</button><button class="btn" data-act="restore">Khôi phục</button></div></div>
+    ${installEvt?'<button class="btn pri" data-act="install">Cài app vào màn hình chính</button>':''}</div>`;
+}
+function saveCalcForm(){
+  const out=$('#out');if(!out)return;
+  const ex=$('#saveForm');if(ex){ex.remove();return}
+  const last=lsGet('dnks.lastProject','');
+  const f=document.createElement('form');f.className='card stack';f.id='saveForm';f.noValidate=true;
+  f.innerHTML=`<div class="fields"><div class="f full"><label for="sv_name">Tên phép tính</label><input id="sv_name" style="font-family:var(--f-ui)" placeholder="Dầm D1 trục 3" maxlength="80"></div>
+    <div class="f full"><label for="sv_proj">Dự án</label><input id="sv_proj" style="font-family:var(--f-ui)" list="projList" value="${esc(last)}" placeholder="Dự án A" maxlength="60"><datalist id="projList">${[...new Set(lsGet(NB,[]).map(x=>x.project).filter(Boolean))].map(p=>`<option value="${esc(p)}">`).join('')}</datalist></div></div>
+    <div class="note bad" id="sv_err" hidden></div><div class="row"><button class="btn pri" type="submit">Lưu</button><button class="btn" type="button" data-act="cancelSave">Hủy</button></div>`;
+  out.after(f);$('#sv_name').focus();
+  f.addEventListener('submit',e=>{e.preventDefault();const name=$('#sv_name').value.trim();const proj=$('#sv_proj').value.trim();
+    if(!name){const er=$('#sv_err');er.hidden=false;er.textContent='Đặt tên cho phép tính trước đã.';return}
+    const list=lsGet(NB,[]);list.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,project:proj,screen:S.screen,vals:Object.assign({},S.vals),util:S.lastRes&&S.lastRes.gov?S.lastRes.gov.util:null,ts:Date.now()});
+    if(lsSet(NB,list)){lsSet('dnks.lastProject',proj);f.remove();toast('Đã lưu vào sổ tính')}else toast('Không lưu được, bộ nhớ trình duyệt đầy')});
+  $('#sv_name').addEventListener('input',()=>{$('#sv_err').hidden=true});
+}
+
+/* ---------- sự kiện ---------- */
+function openScreen(id,vals){S.screen=id;if(SCREENS[id]){S.vals=vals?Object.assign(defaults(id),vals):loadVals(id);S.tab=SCREENS[id].tab}else S.tab=LOOKUPS[id].tab;window.scrollTo(0,0);render();history.pushState({s:id},'')}
+window.addEventListener('popstate',()=>{if(S.screen){S.screen=null;render()}});
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='tab'){S.tab=el.dataset.v;S.screen=null;lsSet('dnks.tab',S.tab);window.scrollTo(0,0);render();return}
+  if(a==='open'){openScreen(el.dataset.id);return}
+  if(a==='back'){if(history.state&&history.state.s)history.back();else{S.screen=null;render()}return}
+  if(a==='code'){S.vals.code=el.dataset.c;saveVals();render();return}
+  if(a==='reset'){S.vals=defaults(S.screen);saveVals();render();return}
+  if(a==='saveCalc'){saveCalcForm();return}
+  if(a==='cancelSave'){const f=$('#saveForm');if(f)f.remove();return}
+  if(a==='openSaved'){const it=lsGet(NB,[]).find(x=>x.id===el.dataset.id);if(it&&SCREENS[it.screen])openScreen(it.screen,it.vals);return}
+  if(a==='delSaved'){if(el.dataset.arm!=='1'){el.dataset.arm='1';el.classList.add('armed');el.textContent='Chắc chưa?';setTimeout(()=>{if(el.isConnected){el.dataset.arm='';el.classList.remove('armed');el.textContent='Xóa'}},3000);return}
+    lsSet(NB,lsGet(NB,[]).filter(x=>x.id!==el.dataset.id));render();toast('Đã xóa');return}
+  if(a==='st'){lsSet('dnks.lk.st',el.dataset.t);render();return}
+  if(a==='backup'){const data={app:'do-nghe-ky-su',version:1,exported:new Date().toISOString(),notebook:lsGet(NB,[])};
+    const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));const l=document.createElement('a');l.href=url;l.download=`so-tinh-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Đã lưu vào thư mục Tải xuống');return}
+  if(a==='restore'){$('#restoreIn').value='';$('#restoreIn').click();return}
+  if(a==='install'){if(installEvt){installEvt.prompt();installEvt=null}return}
+});
+document.addEventListener('input',e=>{const f=e.target.dataset&&e.target.dataset.f;if(!f||!S.screen)return;S.vals[f]=e.target.value;saveVals();clearTimeout(S.tm);S.tm=setTimeout(computeAndShow,120)});
+document.addEventListener('change',e=>{const f=e.target.dataset&&e.target.dataset.f;if(!f||!S.screen)return;S.vals[f]=e.target.value;
+  if(f==='type'){S.vals.sec=D.SECTIONS[e.target.value][Math.min(4,D.SECTIONS[e.target.value].length-1)].join('x')}
+  saveVals();const sc=SCREENS[S.screen];
+  if(e.target.tagName==='SELECT'){const st=window.scrollY;$('#fields').innerHTML=sc.fields.map(x=>fieldHtml(x,S.vals)).join('');window.scrollTo(0,st)}
+  computeAndShow()});
+$('#restoreIn').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.app!=='do-nghe-ky-su'||!Array.isArray(d.notebook))throw 0;
+  const have=new Set(lsGet(NB,[]).map(x=>x.id));const merged=lsGet(NB,[]).concat(d.notebook.filter(x=>!have.has(x.id)));lsSet(NB,merged);toast(`Đã khôi phục ${merged.length-have.size} phép tính`);render()}catch(err){toast('File không phải bản sao lưu của Đồ nghề kỹ sư')}});
+
+S.tab=lsGet('dnks.tab','thep');if(!TABS[S.tab])S.tab='thep';
+history.replaceState({},'');
+render();
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(reg=>{reg.addEventListener('updatefound',()=>{const w=reg.installing;w&&w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)toast('Có bản mới. Đóng app mở lại để cập nhật.')})})}).catch(()=>{})}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;if(S.tab==='so'&&!S.screen)render()});
+</script>
+</body>
+</html>
