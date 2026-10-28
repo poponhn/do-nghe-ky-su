@@ -312,7 +312,10 @@
 
   C.blockTear = function (p) {
     const notes = [], formulas = [];
-    const n1 = Math.max(1, +p.n1), n2 = Math.max(1, +p.n2), p1 = +p.p1, p2 = +p.p2, e1 = +p.e1, e2 = +p.e2;
+    const edge = p.dir === 'f2';
+    // F1: lực dọc theo cột bulông, xé về mép đầu. F2: lực vuông góc, xé về mép bên → đổi vai trò hàng/cột
+    const n1 = Math.max(1, +(edge ? p.n2 : p.n1)), n2 = Math.max(1, +(edge ? p.n1 : p.n2));
+    const p1 = +(edge ? p.p2 : p.p1), p2 = +(edge ? p.p1 : p.p2), e1 = +(edge ? p.e2 : p.e1), e2 = +(edge ? p.e1 : p.e2);
     const d0 = +p.d0, t = +p.t, V = +p.V * 1000;
     const st = find(DATA.STEEL, 'g', p.grade);
     const fy = +p.fy || st.fy, fu = +p.fu || st.fu;
@@ -334,16 +337,18 @@
       formulas.push(`Rn = 0,6Fu·Anv + Ubs·Fu·Ant ≤ 0,6Fy·Agv + Ubs·Fu·Ant;  φ = 0,75; Ubs = ${Ubs}`);
       formulas.push('Tiêu chuẩn: AISC 360-16 mục J4.3.');
     }
-    const checks = [{ k: 'Xé khối (block tearing)', d: p.V, c: kN(cap), u: 'kN', util: V / cap }];
+    const checks = [{ k: edge ? 'Xé khối ra mép bên (lực F2)' : 'Xé khối (lực F1)', d: p.V, c: kN(cap), u: 'kN', util: V / cap }];
     const rows = [
       { k: 'Agv (cắt, nguyên)', v: Math.round(Agv), u: 'mm²' },
       { k: 'Anv (cắt, thực)', v: Math.round(Anv), u: 'mm²' },
       { k: 'Ant (kéo, thực)', v: Math.round(Ant), u: 'mm²' },
       { k: 'Khả năng chống xé khối', v: r1(kN(cap)), u: 'kN', strong: true },
     ];
-    notes.push({ t: 'info', s: centre ? 'Khối giữa: 2 mặt cắt dọc + 1 mặt kéo giữa các cột bulông ngoài cùng (ví dụ bản mã giữa).' : 'Khối góc: 1 mặt cắt dọc + 1 mặt kéo ra mép bên (ví dụ bụng dầm cắt khấc, thép góc).' });
-    if (centre && n2 === 1) notes.push({ t: 'warn', s: 'Chỉ 1 cột bulông thì khối giữa không có mặt kéo. Kiểm tra dạng khối góc.' });
-    return { rows, checks, notes, formulas, gov: summarize(checks), draw: { n1, n2, p1, p2, e1, e2, d0, centre } };
+    if (!edge) notes.push({ t: 'info', s: centre ? 'Lực F1 dọc cột bulông. Khối giữa: 2 mặt cắt dọc + 1 mặt kéo giữa các cột bulông ngoài cùng (ví dụ bản mã giữa).' : 'Lực F1 dọc cột bulông. Khối góc: 1 mặt cắt dọc + 1 mặt kéo ra mép bên (ví dụ bụng dầm cắt khấc, thép góc).' });
+    else notes.push({ t: 'info', s: centre ? 'Lực F2 vuông góc, xé ra mép bên: 2 mặt cắt dọc theo hàng trên và hàng dưới (dài e2 + bước cột) + 1 mặt kéo dọc cột bulông trong cùng.' : 'Lực F2 vuông góc, xé ra mép bên, khối góc: 1 mặt cắt dọc theo hàng ngoài cùng + 1 mặt kéo dọc cột bulông ra mép trên/dưới (khoảng cách mép lấy bằng e1).' });
+    if (centre && n2 === 1) notes.push({ t: 'warn', s: edge ? 'Chỉ 1 hàng bulông thì khối xé ra mép không có mặt kéo. Kiểm tra dạng khối góc.' : 'Chỉ 1 cột bulông thì khối giữa không có mặt kéo. Kiểm tra dạng khối góc.' });
+    if (edge) notes.push({ t: 'info', s: 'Nên kiểm cả hai hướng F1 và F2 nếu liên kết chịu lực theo hai phương; hướng nguy hiểm hơn quyết định.' });
+    return { rows, checks, notes, formulas, gov: summarize(checks), draw: { n1: +p.n1, n2: +p.n2, p1: +p.p1, p2: +p.p2, e1: +p.e1, e2: +p.e2, d0, centre, edge } };
   };
 
   C.tension = function (p) {
@@ -692,6 +697,23 @@
     if (c === 'cant_p') { Mneg = P * L; V = P; d = P * L ** 3 / (3 * EI); txt = 'M = PL (ngàm); V = P; δ = PL³/3EI'; }
     if (c === 'ff_w') { Mneg = w * L * L / 12; M = w * L * L / 24; V = w * L / 2; d = w * L ** 4 / (384 * EI); txt = 'M gối = wL²/12; M nhịp = wL²/24; V = wL/2; δ = wL⁴/384EI'; }
     if (c === 'ff_p') { Mneg = P * L / 8; M = P * L / 8; V = P / 2; d = P * L ** 3 / (192 * EI); txt = 'M gối = M nhịp = PL/8; V = P/2; δ = PL³/192EI (P ở giữa)'; }
+    if (c === 'c3_w' || c === 'c5_w') {
+      // Dầm liên tục nhịp bằng nhau, EI không đổi, tải phân bố đều trên tất cả các nhịp (bảng hệ số kinh điển)
+      const T = c === 'c3_w' ? { n: 3, Ms: [0.080, 0.025], Mg: [0.100], R: [0.400, 1.100], V: 0.600, d: 0.677 }
+                             : { n: 5, Ms: [0.0779, 0.0332, 0.0461], Mg: [0.1053, 0.0789], R: [0.3947, 1.1316, 0.9737], V: 0.6053, d: 0.644 };
+      const wl2 = w * L * L, wl = w * L;
+      M = T.Ms[0] * wl2; Mneg = T.Mg[0] * wl2; V = T.V * wl; d = T.d * w * L ** 4 / (100 * EI);
+      const rws = [];
+      T.Ms.forEach((k, i) => rws.push({ k: `M nhịp ${i + 1}${T.n === 5 && i < 2 ? ' (= nhịp ' + (5 - i) + ')' : T.n === 3 && i === 0 ? ' (= nhịp 3)' : ''}`, v: (k * wl2 / 1e6).toFixed(2), u: 'kNm', strong: i === 0 }));
+      T.Mg.forEach((k, i) => rws.push({ k: `M gối ${'BC'[i]}${T.n === 5 ? (i === 0 ? ' (= gối E)' : ' (= gối D)') : ' (= gối C)'}`, v: (-k * wl2 / 1e6).toFixed(2), u: 'kNm', strong: i === 0 }));
+      T.R.forEach((k, i) => rws.push({ k: `Phản lực gối ${'ABC'[i]}`, v: (k * wl / 1000).toFixed(2), u: 'kN' }));
+      rws.push({ k: 'Lực cắt lớn nhất (bên trái gối B)', v: (V / 1000).toFixed(2), u: 'kN', strong: true });
+      if (EI > 0) { rws.push({ k: 'Độ võng lớn nhất (nhịp biên)', v: d.toFixed(1), u: 'mm', strong: true }); rws.push({ k: 'Tỷ số L/δ', v: d > 0 ? `L/${Math.round(L / d)}` : '—', u: '' }); }
+      const f = c === 'c3_w' ? 'Dầm 3 nhịp: M nhịp biên = 0,080wL²; M nhịp giữa = 0,025wL²; M gối B = −0,100wL²; R_A = 0,400wL; R_B = 1,100wL; V = 0,600wL; δ = 0,677wL⁴/100EI'
+                             : 'Dầm 5 nhịp: M nhịp 1 = 0,078wL²; nhịp 2 = 0,033wL²; nhịp 3 = 0,046wL²; M gối B = −0,105wL²; gối C = −0,079wL²; R_A = 0,395wL; R_B = 1,132wL; R_C = 0,974wL; δ = 0,644wL⁴/100EI';
+      return { rows: rws, checks: [], notes: [{ t: 'warn', s: 'Hệ số cho tải đầy tất cả các nhịp. Khi hoạt tải xếp cách nhịp, M nhịp lớn hơn (ví dụ 3 nhịp: nhịp biên tới ≈ 0,101wL²) – cần tổ hợp bất lợi nếu hoạt tải chiếm phần lớn.' }],
+        formulas: [f, 'Nhịp bằng nhau L, EI không đổi. w nhập kN/m, L m, I cm⁴, E MPa.'], gov: null, draw: { c, n: T.n } };
+    }
     if (c === 'pc_w') { Mneg = w * L * L / 8; M = 9 * w * L * L / 128; V = 5 * w * L / 8; d = w * L ** 4 / (185 * EI); txt = 'M ngàm = wL²/8; M nhịp = 9wL²/128; V = 5wL/8; δ ≈ wL⁴/185EI'; }
     const rows = [];
     if (M) rows.push({ k: 'Moment dương lớn nhất', v: (M / 1e6).toFixed(2), u: 'kNm', strong: true });

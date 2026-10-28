@@ -19,7 +19,7 @@
   --bg:#EEF1F4;--surface:#FFFFFF;--surface-2:#E4E9EE;--ink:#14202B;--muted:#5A6874;--line:#D3DAE1;
   --accent:#1D4E89;--accent-ink:#FFFFFF;--accent-soft:#DCE7F4;
   --ok:#17663F;--ok-soft:#DDF1E5;--warn:#8A5300;--warn-soft:#FBEBCF;--bad:#B3261E;--bad-soft:#FADFDC;
-  --draw:#14202B;--draw-2:#8C99A5;--tension:#C2410C;--compress:#1D4E89;
+  --draw:#14202B;--draw-2:#8C99A5;--tension:#C2410C;--compress:#1D4E89;--bar:#1565C0;
   --f-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
@@ -27,15 +27,16 @@
   --bg:#0D141B;--surface:#151E27;--surface-2:#1D2833;--ink:#E3EAF0;--muted:#94A3B0;--line:#283542;
   --accent:#7DB3F0;--accent-ink:#0A1B2E;--accent-soft:#16304D;
   --ok:#6FD49B;--ok-soft:#123323;--warn:#F2B35B;--warn-soft:#3A2A12;--bad:#F28B82;--bad-soft:#3D1D1A;
-  --draw:#E3EAF0;--draw-2:#6B7A88;--tension:#FB923C;--compress:#7DB3F0;color-scheme:dark}}
+  --draw:#E3EAF0;--draw-2:#6B7A88;--tension:#FB923C;--compress:#7DB3F0;--bar:#7DB3F0;color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0D141B;--surface:#151E27;--surface-2:#1D2833;--ink:#E3EAF0;--muted:#94A3B0;--line:#283542;
   --accent:#7DB3F0;--accent-ink:#0A1B2E;--accent-soft:#16304D;
   --ok:#6FD49B;--ok-soft:#123323;--warn:#F2B35B;--warn-soft:#3A2A12;--bad:#F28B82;--bad-soft:#3D1D1A;
-  --draw:#E3EAF0;--draw-2:#6B7A88;--tension:#FB923C;--compress:#7DB3F0;color-scheme:dark}
+  --draw:#E3EAF0;--draw-2:#6B7A88;--tension:#FB923C;--compress:#7DB3F0;--bar:#7DB3F0;color-scheme:dark}
 *{box-sizing:border-box}
 html{padding-top:env(safe-area-inset-top,0px)}
 [hidden]{display:none!important}
+.rebar{color:var(--bar);font-weight:700}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -186,8 +187,8 @@ const SCREENS={
       G('Bản mã'),F('t','Chiều dày t','mm',12),F('fu','fu bản mã','MPa',430),F('e1','Mép e1 (theo lực cắt)','mm',50),F('e2','Mép e2 (vuông góc)','mm',40)],
     draw:drawBolts},
   blockTear:{tab:'thep',ic:'BT',title:'Xé khối bản mã',ds:'Block tearing / block shear',codes:['EC3','AISC'],fn:K.blockTear,
-    fields:[F('V','Lực','kN',400),S_('mode','Dạng khối',[['centre','Khối giữa (2 mặt cắt)'],['corner','Khối góc (1 mặt cắt)']],'centre'),
-      G('Bố trí'),F('n1','Số hàng dọc lực','',3),F('n2','Số cột','',2),F('p1','Bước p1','mm',70),F('p2','Bước p2','mm',80),F('e1','Mép đầu e1','mm',50),F('e2','Mép bên e2','mm',40),
+    fields:[F('V','Lực','kN',400),S_('dir','Hướng lực',[['f1','F1 – dọc cột bulông, xé về mép đầu'],['f2','F2 – vuông góc, xé ra mép bên']],'f1',{full:true}),S_('mode','Dạng khối',[['centre','Khối giữa (2 mặt cắt)'],['corner','Khối góc (1 mặt cắt)']],'centre'),
+      G('Bố trí'),F('n1','Số hàng dọc lực','',3),F('n2','Số cột','',2),F('p1','Bước p1','mm',70),F('p2','Bước p2','mm',80),F('e1','Mép đầu e1 (hướng F1)','mm',50),F('e2','Mép bên e2 (hướng F2)','mm',40),
       G('Bản'),F('d0','Lỗ d0','mm',22),F('t','Dày t','mm',10),S_('grade','Mác thép',OPT.steel,'S275')],
     draw:drawBlock},
   tension:{tab:'thep',ic:'N',title:'Thanh / bản mã chịu kéo',ds:'Chảy tiết diện nguyên, đứt tiết diện thực',codes:['EC3','AISC'],fn:K.tension,
@@ -206,9 +207,9 @@ const SCREENS={
       S_('grade','Mác thép',OPT.steel,'S355'),S_('formed','Ống/hộp',[['hot','Cán nóng'],['cold','Tạo hình nguội']],'hot',{when:v=>v.type==='CHS'||v.type==='RHS'}),
       F('L','Chiều dài L','m',4),F('Ky','K trục khỏe','',1),F('Kz','K trục yếu','',1)],
     help:'K: khớp-khớp 1,0 · ngàm-khớp 0,7 · ngàm-ngàm 0,5 · côngxôn 2,0',draw:drawSection},
-  beamCase:{tab:'tien',ic:'M',title:'Nội lực dầm',ds:'Đơn giản, côngxôn, ngàm: M, V, độ võng',codes:[],fn:K.beamCase,
-    fields:[S_('case','Sơ đồ',[['ss_w','Đơn giản, tải phân bố'],['ss_p','Đơn giản, tải tập trung'],['cant_w','Côngxôn, phân bố'],['cant_p','Côngxôn, tập trung đầu'],['ff_w','Ngàm 2 đầu, phân bố'],['ff_p','Ngàm 2 đầu, tập trung giữa'],['pc_w','Ngàm-khớp, phân bố']],'ss_w',{full:true}),
-      F('L','Nhịp L','m',6),F('w','Tải phân bố w','kN/m',20,{when:v=>/_w$/.test(v.case)}),F('P','Tải tập trung P','kN',50,{when:v=>/_p$/.test(v.case)}),F('a','Vị trí P cách gối trái','m',3,{when:v=>v.case==='ss_p'}),
+  beamCase:{tab:'tien',ic:'M',title:'Nội lực dầm',ds:'Đơn giản, côngxôn, ngàm, liên tục 3–5 nhịp: M, V, độ võng',codes:[],fn:K.beamCase,
+    fields:[S_('case','Sơ đồ',[['ss_w','Đơn giản, tải phân bố'],['ss_p','Đơn giản, tải tập trung'],['cant_w','Côngxôn, phân bố'],['cant_p','Côngxôn, tập trung đầu'],['ff_w','Ngàm 2 đầu, phân bố'],['ff_p','Ngàm 2 đầu, tập trung giữa'],['pc_w','Ngàm-khớp, phân bố'],['c3_w','Liên tục 3 nhịp đều, phân bố'],['c5_w','Liên tục 5 nhịp đều, phân bố']],'ss_w',{full:true}),
+      F('L','Nhịp L (mỗi nhịp)','m',6),F('w','Tải phân bố w','kN/m',20,{when:v=>/_w$/.test(v.case)}),F('P','Tải tập trung P','kN',50,{when:v=>/_p$/.test(v.case)}),F('a','Vị trí P cách gối trái','m',3,{when:v=>v.case==='ss_p'}),
       F('E','E','MPa',200000),F('I','I','cm⁴',7210)],
     help:'Tra I của thép hình ở tab Tra cứu → Thép hình. Bê tông: E theo mác, I = bh³/12.',draw:drawBeamCase},
 };
@@ -281,7 +282,7 @@ function computeAndShow(){
       return `<div class="chk"><span class="k">${esc(c.k)}</span><span class="r" style="color:${col};font-weight:600">${isFinite(u)?Math.round(u*100)+'%':'—'}</span>
       <span class="bar"><i style="width:${Math.min(100,(isFinite(u)?u:0)*100).toFixed(1)}%;background:${col}"></i></span>
       <span class="dc">${fd(c.d)} / ${fd(c.c)} ${esc(c.u)}</span></div>`}).join('')}</div>`:'';
-  const rows=`<div class="card"><div class="eyebrow" style="margin-bottom:6px">Kết quả</div><div class="kv">${res.rows.map(r=>`<span${r.strong?' class="s"':''}>${esc(r.k)}</span><span class="v${r.strong?' s':''}">${typeof r.v==='number'?fmtN(r.v):esc(r.v)} ${esc(r.u||'')}</span>`).join('')}</div></div>`;
+  const rows=`<div class="card"><div class="eyebrow" style="margin-bottom:6px">Kết quả</div><div class="kv">${res.rows.map(r=>`<span${r.strong?' class="s"':''}>${esc(r.k)}</span><span class="v${r.strong?' s':''}">${typeof r.v==='number'?fmtN(r.v):barHL(esc(r.v))} ${esc(r.u||'')}</span>`).join('')}</div></div>`;
   let drawing='';
   if(sc.draw){try{drawing=`<div class="card">${sc.draw(res,p)}</div>`}catch(e){drawing=''}}
   const notes=res.notes.length?`<div class="notes">${res.notes.map(n=>`<div class="note ${n.t}"><span class="dt">${n.t==='ok'?'✓':n.t==='bad'?'✕':n.t==='warn'?'!':'i'}</span><span>${esc(n.s)}</span></div>`).join('')}</div>`:'';
@@ -306,7 +307,7 @@ function drawBeamSec(res){
     <rect x="${x0+ci}" y="${y0+ci}" width="${bw-2*ci}" height="${bh-2*ci}" rx="4" fill="none" stroke="var(--draw-2)" stroke-width="${Math.max(1,ds).toFixed(1)}"/>${top}${bars}
     <text x="${W/2}" y="${y0-10}" font-size="11" text-anchor="middle" fill="var(--muted)">b = ${d.b}</text>
     <text x="${x0-8}" y="${H/2}" font-size="11" text-anchor="middle" fill="var(--muted)" transform="rotate(-90 ${x0-8} ${H/2})">h = ${d.h}</text>
-    <text x="${W/2}" y="${y0+bh+20}" font-size="11" text-anchor="middle" fill="var(--tension)">${d.layers.map((k,i)=>k+'Φ'+d.D).join(' + ')} · hở ${Math.round(d.clear)} mm</text>`,'Mặt cắt dầm và bố trí thép');
+    <text x="${W/2}" y="${y0+bh+20}" font-size="11" text-anchor="middle" fill="var(--bar)" font-weight="700">${d.layers.map((k,i)=>k+'Φ'+d.D).join(' + ')} · hở ${Math.round(d.clear)} mm</text>`,'Mặt cắt dầm và bố trí thép');
 }
 function drawBolts(res,p){
   const d=res.draw;if(!d)return '';
@@ -326,19 +327,30 @@ function drawBolts(res,p){
     <text x="${x0+pw*sc+44}" y="${cy+4}" font-size="12" fill="var(--accent)">M</text>
     <text x="${x0}" y="${y0-8}" font-size="11" fill="var(--tension)">● chịu kéo lớn nhất</text>`,'Sơ đồ nhóm bulông');
 }
+const barHL=t=>String(t).replace(/(\d+\s*)?Φ\d+(\s*a\s*\d+)?/g,m=>`<span class="rebar">${m}</span>`);
 function drawBlock(res){
   const d=res.draw;if(!d)return '';
-  const pw=(d.n2-1)*d.p2+2*Math.max(d.e2,d.p2/2)+(d.centre?80:0),ph=(d.n1-1)*d.p1+d.e1+60;
-  const W=320,H=250,pad=24;const sc=Math.min((W-2*pad)/pw,(H-2*pad)/ph);
-  const x0=(W-pw*sc)/2,y0=pad;
-  const bx=j=>x0+((d.centre?40:0)+Math.max(d.e2,d.p2/2)+j*d.p2)*sc,by=i=>y0+(d.e1+i*d.p1)*sc;
+  const W=320,H=260,pad=34;
+  const mR=Math.max(d.e2,d.p2/2)+(d.centre&&!d.edge?40:30),mB=d.e1+(d.edge?0:30);
+  const pw=d.e2+(d.n2-1)*d.p2+mR+(d.edge?0:(d.centre?40:0)),ph=d.e1+(d.n1-1)*d.p1+mB;
+  const sc=Math.min((W-2*pad)/pw,(H-2*pad)/ph);const x0=(W-pw*sc)/2+(d.edge?8:0),y0=pad;
+  const offX=d.edge?d.e2:(d.centre?40:0)+Math.max(d.e2,d.p2/2);
+  const bx=j=>x0+(offX+j*d.p2)*sc,by=i=>y0+(d.e1+i*d.p1)*sc;
+  const xR=x0+pw*sc,yB=y0+ph*sc;
   let b='';for(let i=0;i<d.n1;i++)for(let j=0;j<d.n2;j++)b+=`<circle cx="${bx(j).toFixed(1)}" cy="${by(i).toFixed(1)}" r="${Math.max(3.5,d.d0*sc/2).toFixed(1)}" fill="var(--surface)" stroke="var(--draw)" stroke-width="1.3"/>`;
-  const yb=by(d.n1-1);
-  const block=d.centre?`<path d="M ${bx(0)} ${y0} V ${yb} H ${bx(d.n2-1)} V ${y0}" fill="none" stroke="var(--tension)" stroke-width="2.2" stroke-dasharray="6 4"/>`
-    :`<path d="M ${bx(0)} ${y0} V ${yb} H ${x0+pw*sc}" fill="none" stroke="var(--tension)" stroke-width="2.2" stroke-dasharray="6 4"/>`;
-  return svgWrap(W,H,`<rect x="${x0}" y="${y0}" width="${pw*sc}" height="${ph*sc}" fill="var(--surface-2)" stroke="var(--draw)" stroke-width="1.5"/>${b}${block}
-    <path d="M ${W/2} ${y0+ph*sc+2} v -0" /><text x="${x0+4}" y="${y0+ph*sc-6}" font-size="11" fill="var(--tension)">- - đường xé khối</text>
-    <path d="M ${(bx(0)+bx(d.n2-1))/2} ${y0-2} v -0"/>`,'Sơ đồ xé khối');
+  const dash=`fill="none" stroke="var(--tension)" stroke-width="2.2" stroke-dasharray="6 4"`;
+  let path,arrow;
+  if(!d.edge){const yb=by(d.n1-1);
+    path=d.centre?`M ${bx(0)} ${y0} V ${yb} H ${bx(d.n2-1)} V ${y0}`:`M ${bx(0)} ${y0} V ${yb} H ${xR}`;
+    const xa=d.centre?(bx(0)+bx(d.n2-1))/2:(bx(0)+xR)/2;
+    arrow=`<line x1="${xa}" x2="${xa}" y1="${y0+14}" y2="${y0-22}" stroke="var(--tension)" stroke-width="2"/><path d="M ${xa} ${y0-28} l -5 9 h 10 z" fill="var(--tension)"/><text x="${xa+8}" y="${y0-16}" font-size="12" fill="var(--tension)">F1</text>`;
+  }else{const xl=bx(d.n2-1);
+    path=d.centre?`M ${x0} ${by(0)} H ${xl} V ${by(d.n1-1)} H ${x0}`:`M ${x0} ${by(0)} H ${xl} V ${yB}`;
+    const ya=d.centre?(by(0)+by(d.n1-1))/2:(by(0)+yB)/2;
+    arrow=`<line x1="${x0+14}" x2="${x0-20}" y1="${ya}" y2="${ya}" stroke="var(--tension)" stroke-width="2"/><path d="M ${x0-27} ${ya} l 9 -5 v 10 z" fill="var(--tension)"/><text x="${x0-28}" y="${ya-8}" font-size="12" fill="var(--tension)">F2</text>`;
+  }
+  return svgWrap(W,H,`<rect x="${x0}" y="${y0}" width="${pw*sc}" height="${ph*sc}" fill="var(--surface-2)" stroke="var(--draw)" stroke-width="1.5"/>${b}<path d="${path}" ${dash}/>${arrow}
+    <text x="${x0+4}" y="${yB-6}" font-size="11" fill="var(--tension)">- - đường xé khối</text>`,'Sơ đồ xé khối');
 }
 function drawAnchor(res,p){
   const d=res.draw;if(!d)return '';
@@ -392,10 +404,12 @@ function drawBeamCase(res,p){
   if(c.startsWith('cant'))s+=fix(x1);
   if(c.startsWith('ff'))s+=fix(x1)+fix(x2);
   if(c.startsWith('pc'))s+=fix(x1)+pin(x2);
+  if(/^c[35]_/.test(c)){const n=+c[1];for(let i=0;i<=n;i++)s+=pin(x1+(x2-x1)*i/n);for(let i=0;i<n;i++)s+=`<text x="${x1+(x2-x1)*(i+0.5)/n}" y="${y+40}" font-size="11" fill="var(--muted)" text-anchor="middle">L</text>`;
+    for(let i=0;i<=n;i++)s+=`<text x="${x1+(x2-x1)*i/n}" y="${y+30}" font-size="10.5" fill="var(--muted)" text-anchor="middle">${'ABCDEF'[i]}</text>`;}
   if(/_w$/.test(c)){for(let x=x1;x<=x2;x+=20)s+=`<line x1="${x}" x2="${x}" y1="${y-34}" y2="${y-6}" stroke="var(--tension)" stroke-width="1.4"/><path d="M ${x} ${y-4} l -3 -6 h 6 z" fill="var(--tension)"/>`;s+=`<line x1="${x1}" x2="${x2}" y1="${y-34}" y2="${y-34}" stroke="var(--tension)"/><text x="${(x1+x2)/2}" y="${y-40}" font-size="12" fill="var(--tension)" text-anchor="middle">w = ${p.w} kN/m</text>`}
   else{const xp=c==='ss_p'?x1+(x2-x1)*Math.min(1,Math.max(0,(+p.a)/(+p.L))):c==='cant_p'?x2:(x1+x2)/2;s+=`<line x1="${xp}" x2="${xp}" y1="${y-44}" y2="${y-6}" stroke="var(--tension)" stroke-width="2.2"/><path d="M ${xp} ${y-4} l -5 -9 h 10 z" fill="var(--tension)"/><text x="${xp}" y="${y-50}" font-size="12" fill="var(--tension)" text-anchor="middle">P = ${p.P} kN</text>`}
-  s+=`<text x="${(x1+x2)/2}" y="${y+40}" font-size="11.5" fill="var(--muted)" text-anchor="middle">L = ${p.L} m</text>`;
-  return svgWrap(W,H,s,'Sơ đồ dầm');
+  s+=`<text x="${(x1+x2)/2}" y="${y+(/^c[35]_/.test(c)?56:40)}" font-size="11.5" fill="var(--muted)" text-anchor="middle">L = ${p.L} m${/^c[35]_/.test(c)?' mỗi nhịp':''}</text>`;
+  return svgWrap(W,/^c[35]_/.test(c)?136:H,s,'Sơ đồ dầm');
 }
 
 /* ---------- tra cứu ---------- */
@@ -438,18 +452,18 @@ function viewLookup(id){
   return head;
 }
 const UNITS={
-  'Lực':{N:1,kN:1e3,MN:1e6,kgf:9.80665,'T (tấn lực)':9806.65,lbf:4.448222,kip:4448.222},
-  'Moment':{'N·m':1,'kN·m':1e3,'kgf·m':9.80665,'T·m':9806.65,'kip·ft':1355.818,'kip·in':112.9848,'lbf·ft':1.355818},
-  'Ứng suất':{MPa:1,kPa:1e-3,'N/mm²':1,'kgf/cm²':0.0980665,'T/m²':0.00980665,psi:0.00689476,ksi:6.89476},
+  'Lực':{N:1,daN:10,kN:1e3,MN:1e6,kgf:9.80665,'T (tấn lực)':9806.65,lbf:4.448222,kip:4448.222},
+  'Moment':{'N·m':1,'daN·m':10,'daN·cm':0.1,'kN·m':1e3,'kgf·m':9.80665,'T·m':9806.65,'kip·ft':1355.818,'kip·in':112.9848,'lbf·ft':1.355818},
+  'Ứng suất':{MPa:1,kPa:1e-3,'N/mm²':1,'daN/cm²':0.1,'kgf/cm²':0.0980665,'T/m²':0.00980665,psi:0.00689476,ksi:6.89476},
   'Chiều dài':{mm:1,cm:10,m:1000,in:25.4,ft:304.8},
-  'Tải phân bố':{'kN/m':1,'N/mm':1,'kgf/m':0.00980665,'T/m':9.80665,'kip/ft':14.5939,'lbf/ft':0.0145939},
-  'Áp lực':{'kN/m² (kPa)':1,'kgf/m²':0.00980665,'T/m²':9.80665,psf:0.0478803,'ksf':47.8803},
+  'Tải phân bố':{'kN/m':1,'N/mm':1,'daN/m':0.01,'kgf/m':0.00980665,'T/m':9.80665,'kip/ft':14.5939,'lbf/ft':0.0145939},
+  'Áp lực':{'kN/m² (kPa)':1,'daN/m²':0.01,'kgf/m²':0.00980665,'T/m²':9.80665,psf:0.0478803,'ksf':47.8803},
 };
 function bindLookup(id){
   if(id==='rebar'){const upd=()=>{const as=+($('#lk_as').value.replace(',','.'))||0,asm=+($('#lk_asm').value.replace(',','.'))||0;
     const a=[12,14,16,18,20,22,25,28,32].map(d=>{const n=Math.max(2,Math.ceil(as/K.barArea(d)));return `${n}Φ${d} (${Math.round(n*K.barArea(d))})`}).join(' · ');
     const b=[8,10,12,14,16].map(d=>{const s=Math.min(200,Math.floor(1000*K.barArea(d)/asm/10)*10);return s>=70?`Φ${d}a${s}`:null}).filter(Boolean).join(' · ');
-    $('#lk_out').innerHTML=`<b>As ${as}:</b> ${a}<br><b>As/m ${asm}:</b> ${b||'—'}`};$('#lk_as').oninput=upd;$('#lk_asm').oninput=upd;upd()}
+    $('#lk_out').innerHTML=`<b>As ${as}:</b> ${barHL(a)}<br><b>As/m ${asm}:</b> ${b?barHL(b):'—'}`};$('#lk_as').oninput=upd;$('#lk_asm').oninput=upd;upd()}
   if(id==='bolts'){$('#lk_bg').onchange=e=>{lsSet('dnks.lk.bg',e.target.value);render()}}
   if(id==='units'){const kind=$('#u_kind'),from=$('#u_from'),val=$('#u_val'),out=$('#u_out');
     const fill=()=>{from.innerHTML=Object.keys(UNITS[kind.value]).map(u=>`<option>${u}</option>`).join('');upd()};
