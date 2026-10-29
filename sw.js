@@ -1,5 +1,5 @@
-const VERSION = 'dnks-v4';
-const CORE = ['./', './index.html', './data.js', './calc.js', './manifest.webmanifest',
+const VERSION = 'dnks-v5';
+const CORE = ['./', './index.html', './data.js', './calc.js', './geo.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
